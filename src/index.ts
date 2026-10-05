@@ -1,9 +1,44 @@
 
 import * as dotenv from 'dotenv';
-dotenv.config();
+import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
+import { getCommandMap } from './helpers.js';
 
+dotenv.config();
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN ?? '';
 
-console.log("Strombot Hallo!");
+const commandMap = getCommandMap();
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-console.log(process.env.DISCORD_TOKEN);
+client.once(Events.ClientReady, (readyClient) => {
+    console.log(`Strombot started. Logged in as ${readyClient.user.tag}`);
+})
+
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = commandMap.get(interaction.commandName);
+
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({
+                content: 'There was an error while executing this command!',
+                flags: MessageFlags.Ephemeral,
+            });
+        } else {
+            await interaction.reply({
+				content: 'There was an error while executing this command!',
+				flags: MessageFlags.Ephemeral,
+			});
+        }
+    }
+});
+
+client.login(DISCORD_TOKEN);

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "npm run build && node dist/index.js",
+    "deploy": "npx tsx ./src/deploy_commands.ts",
     "lint": "npx eslint src",
     "config": "cp .env.example .env"
   },
@@ -22,7 +23,7 @@
     "typescript-eslint": "^8.71.0"
   },
   "dependencies": {
-    "discord": "^0.8.2",
+    "discord.js": "^14.27.0",
     "dotenv": "^18.0.5"
   }
 }
