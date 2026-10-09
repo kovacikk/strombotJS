@@ -1,9 +1,8 @@
-import type { DiscordCommand } from './commands/shared_types.ts';
+import type { DiscordCommand } from './types.js';
 import { SlashCommandBuilder } from 'discord.js';
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
 
 import allCommands from './commands/index.js';
-
 
 export function getCommands(): DiscordCommand[] {
     return allCommands;

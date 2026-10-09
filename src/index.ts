@@ -1,44 +1,21 @@
 
 import * as dotenv from 'dotenv';
-import { Client, Events, GatewayIntentBits, MessageFlags } from 'discord.js';
-import { getCommandMap } from './helpers.js';
-
 dotenv.config();
+
+import { Client, GatewayIntentBits } from 'discord.js';
+import allEvents from './events/index.js';
+
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN ?? '';
 
-const commandMap = getCommandMap();
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.once(Events.ClientReady, (readyClient) => {
-    console.log(`Strombot started. Logged in as ${readyClient.user.tag}`);
-})
-
-client.on(Events.InteractionCreate, async (interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-
-    const command = commandMap.get(interaction.commandName);
-
-    if (!command) {
-        console.error(`No command matching ${interaction.commandName} was found.`);
-        return;
+// Initialze all events
+for (const event of allEvents) {
+    if (event.once) {
+        client.once(event.name, (...args) => event.execute(...args));
+    } else {
+        client.on(event.name, (...args) => event.execute(...args));
     }
-
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({
-                content: 'There was an error while executing this command!',
-                flags: MessageFlags.Ephemeral,
-            });
-        } else {
-            await interaction.reply({
-				content: 'There was an error while executing this command!',
-				flags: MessageFlags.Ephemeral,
-			});
-        }
-    }
-});
+}
 
 client.login(DISCORD_TOKEN);

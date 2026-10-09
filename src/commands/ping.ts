@@ -1,4 +1,4 @@
-import type { DiscordCommand } from './shared_types.ts';
+import type { DiscordCommand } from '../types.js';
 
 
 const Ping: DiscordCommand = {
