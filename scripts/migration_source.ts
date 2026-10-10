@@ -15,11 +15,11 @@ export default new DataSource({
     database: process.env.MYSQL_DATABASE ?? '',
     synchronize: false,
     entities: [
-        `${__dirname}/src/data/entities/*.ts`,
-        `${__dirname}/src/data/entities/*.js`
+        `${__dirname}/../src/data/entities/*.ts`,
+        `${__dirname}/../src/data/entities/*.js`
     ],
     migrations: [
-        `${__dirname}/src/data/migrations/*.ts`,
-        `${__dirname}/src/data/migrations/*.js`
+        `${__dirname}/../src/data/migrations/*.ts`,
+        `${__dirname}/../src/data/migrations/*.js`
     ],
 })

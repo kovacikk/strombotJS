@@ -11,7 +11,7 @@ export default new DataSource({
     username: process.env.MYSQL_USER ?? '',
     password: process.env.MYSQL_PASSWORD ?? '',
     database: process.env.MYSQL_DATABASE ?? '',
-    synchronize: true,
+    synchronize: false,
     entities: [
         `${__dirname}/data/entities/*.ts`,
         `${__dirname}/data/entities/*.js`
