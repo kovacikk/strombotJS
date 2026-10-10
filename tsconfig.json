@@ -4,10 +4,10 @@
     // File Layout
      "outDir": "./dist",
      "rootDir": "./src",
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "es2022",
+    "module": "commonjs",
+    "moduleResolution": "bundler",
     "target": "es2025",
     "types": [
       "node",
@@ -36,10 +36,16 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
+  },
+  "include": ["./src/**/*", "scripts/deploy_commands.ts"],
+  "exclude": ["node_modules", "dist", "scripts", "migration_source.ts"]
 }

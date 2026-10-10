@@ -1,12 +1,15 @@
 {
   "name": "strombot",
   "version": "1.0.0",
-  "type": "module",
   "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
     "start": "npm run build && node -r dotenv/config dist/index.js",
-    "deploy": "npx tsx -r dotenv/config ./src/deploy_commands.ts",
+    "deploy": "npx tsx -r dotenv/config scripts/deploy_commands.ts",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:create": "npm run typeorm -- migration:create -d scripts/migration_source.ts",
+    "migration:generate": "npm run typeorm -- migration:generate -d scripts/migration_source.ts",
+    "migration:revert": "npm run typeorm -- migration:revert -d scripts/migration_source.ts",
     "lint": "npx eslint src",
     "config": "cp .env.example .env"
   },
@@ -15,16 +18,22 @@
   "description": "",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "eslint": "^10.12.0",
     "eslint-import-resolver-typescript": "^4.4.5",
     "globals": "^17.13.0",
     "jiti": "^2.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0"
   },
   "dependencies": {
     "discord.js": "^14.27.0",
     "dotenv": "^18.0.5",
-    "node-cron": "^4.6.0"
+    "mysql2": "^3.24.5",
+    "node-cron": "^4.6.0",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^1.1.2",
+    "typeorm-ts-node-commonjs": "^0.3.20"
   }
 }

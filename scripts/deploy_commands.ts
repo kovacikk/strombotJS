@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 import { REST, Routes } from 'discord.js'
 
-import { getCommands, buildCommands } from './helpers.js';
+import { getCommands, buildCommands } from '../src/helpers.js';
 
 dotenv.config();
 const CLIENT_ID = process.env.CLIENT_ID ?? '';
