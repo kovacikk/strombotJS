@@ -1,7 +1,13 @@
-# Awesome Project Build with TypeORM
+How to Run Strombot
 
-Steps to run this project:
+1. Run `npm install`
+2. Run `docker compose up --build`
 
-1. Run `npm i` command
-2. Setup database settings inside `data-source.ts` file
-3. Run `npm start` command
+To update the Slash Commands
+
+- Run `npm run deploy`
+
+To generate migrations
+
+- Make sure the database is running
+- Run `npm run migration:generate MigrationName`

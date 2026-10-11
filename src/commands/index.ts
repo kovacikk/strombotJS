@@ -1,5 +1,6 @@
-import Ping from './ping.js';
+import Ping from "./ping.js";
+import Sync from "./sync.js";
 
-const allCommands = [Ping];
+const allCommands = [Ping, Sync];
 
 export default allCommands;

@@ -1,20 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm"
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class Cat {
+  @PrimaryGeneratedColumn({ type: "int" })
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column({ type: "varchar" })
+  name: string;
 
-    @Column()
-    name: string;
+  @Column({ type: "varchar" })
+  path: string;
 
-    @Column()
-    path: string;
+  @Column({ type: "int", default: 0 })
+  uses: Number;
 
-    @Column()
-    uses: string;
-
-    @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-    createdAt: Date;
+  @CreateDateColumn({ name: "created_at", type: "timestamp" })
+  createdAt: Date;
 }

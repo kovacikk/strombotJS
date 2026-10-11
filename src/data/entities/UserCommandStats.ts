@@ -1,24 +1,23 @@
-import { Entity, OneToOne, Column, JoinColumn, PrimaryColumn } from "typeorm"
+import { Entity, OneToOne, Column, JoinColumn, PrimaryColumn } from "typeorm";
 
 import { User } from "./User";
 
 @Entity()
 export class UserCommandStats {
+  @PrimaryColumn({ name: "user_id", type: "int" })
+  userId: Number;
 
-    @PrimaryColumn({ name: 'user_id' })
-    userId: Number;
+  @OneToOne(() => User, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
+  user: User;
 
-    @OneToOne(() => User, { onDelete: 'CASCADE'})
-    @JoinColumn({ name: 'user_id'})
-    user: User
+  // All callable commands:
+  @Column({ type: "int", default: 0 })
+  cat: Number;
 
-    // All callable commands:
-    @Column()
-    cat: Number;
+  @Column({ type: "int", default: 0 })
+  cancel: Number;
 
-    @Column()
-    cancel: Number;
-
-    @Column()
-    meme: Number;
+  @Column({ type: "int", default: 0 })
+  meme: Number;
 }

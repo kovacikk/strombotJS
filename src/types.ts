@@ -1,20 +1,20 @@
-import { ChatInputCommandInteraction } from 'discord.js'
-import type { CacheType, Client } from 'discord.js';
+import { ChatInputCommandInteraction } from "discord.js";
+import type { CacheType, Client } from "discord.js";
 
 export type DiscordCommand = {
-    name: string;
-    description: string;
-    execute: (interaction: ChatInputCommandInteraction<CacheType>) => void;
+  name: string;
+  description: string;
+  execute: (interaction: ChatInputCommandInteraction<CacheType>) => void;
 };
 
 export type DiscordEvent = {
-    name: string;
-    once?: true,
-    execute: (...args: any[]) => void;
-}
+  name: string;
+  once?: true;
+  execute: (...args: any[]) => void;
+};
 
 export type DiscordCron = {
-    name: string;
-    pattern: string;
-    execute: (client: Client) => void;
-}
+  name: string;
+  pattern: string;
+  execute: (client: Client) => void;
+};
