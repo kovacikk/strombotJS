@@ -1,5 +1,9 @@
 import type { DiscordCommand } from "./types.js";
-import { SlashCommandBuilder } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  SlashCommandBuilder,
+  SlashCommandStringOption,
+} from "discord.js";
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 
 import allCommands from "./commands/index.js";
@@ -26,9 +30,16 @@ export function buildCommands(
   const slashCommands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 
   for (const command of commands) {
-    const slashCommand = new SlashCommandBuilder()
+    let slashCommand = new SlashCommandBuilder()
       .setName(command.name)
       .setDescription(command.description);
+
+    for (const option of command.options ?? []) {
+      if (option.type === ApplicationCommandOptionType.String) {
+        slashCommand.addStringOption(option.option as SlashCommandStringOption);
+      }
+      //...add as needed
+    }
 
     if (slashCommand) {
       slashCommands.push(slashCommand.toJSON());

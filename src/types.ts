@@ -1,9 +1,17 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  ApplicationCommandOptionBase,
+  ApplicationCommandOptionType,
+} from "discord.js";
 import type { CacheType, Client } from "discord.js";
 
 export type DiscordCommand = {
   name: string;
   description: string;
+  options?: {
+    type: ApplicationCommandOptionType;
+    option: ApplicationCommandOptionBase;
+  }[];
   execute: (interaction: ChatInputCommandInteraction<CacheType>) => void;
 };
 

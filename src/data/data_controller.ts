@@ -4,6 +4,28 @@ import { Cat } from "./entities/Cat";
 import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
 
+type GetOptions = {
+  contains?: string;
+};
+
+export async function getBulborb(
+  options?: GetOptions,
+): Promise<Bulborb | null> {
+  const { contains } = options ?? {};
+
+  const bulborbRepository = DataSource.getRepository(Bulborb);
+
+  let query = bulborbRepository.createQueryBuilder("bulborb");
+
+  if (contains) {
+    query = query.where("bulborb.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("RAND()");
+
+  const bulborb = await query.getOne();
+  return bulborb;
+}
+
 export async function getBulborbs(): Promise<Bulborb[]> {
   const bulborbRepository = DataSource.getRepository(Bulborb);
 
