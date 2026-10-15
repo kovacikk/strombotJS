@@ -1,6 +1,5 @@
-import Ping from "./ping.js";
-import Sync from "./sync.js";
+import Drive from "./drive.js";
 
-const allCommands = [Ping, Sync];
+const allCommands = [Drive];
 
 export default allCommands;

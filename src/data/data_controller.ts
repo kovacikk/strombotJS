@@ -12,6 +12,18 @@ export async function getBulborbs(): Promise<Bulborb[]> {
   return allBulborbs;
 }
 
+export async function getBulborbsByName(names: string[]): Promise<Bulborb[]> {
+  const bulborbRepository = DataSource.getRepository(Bulborb);
+
+  const bulborbs: Bulborb[] = await bulborbRepository.find({
+    where: {
+      name: In(names),
+    },
+  });
+
+  return bulborbs;
+}
+
 export async function insertBulborbs(bulborbs: Bulborb[]): Promise<void> {
   const bulborbRepository = DataSource.getRepository(Bulborb);
 

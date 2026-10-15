@@ -6,6 +6,7 @@
     "build": "npx tsc",
     "start": "npm run build && node -r dotenv/config dist/index.js",
     "deploy": "npx tsx -r dotenv/config scripts/deploy_commands.ts",
+    "drive": "npx tsx -r dotenv/config scripts/create_drive_folder.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:create": "npm run typeorm -- migration:create -d scripts/migration_source.ts",
     "migration:generate": "npm run typeorm -- migration:generate -d scripts/migration_source.ts",
@@ -29,8 +30,10 @@
     "typescript-eslint": "^8.71.0"
   },
   "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
     "discord.js": "^14.27.0",
     "dotenv": "^18.0.5",
+    "googleapis": "^178.0.0",
     "mysql2": "^3.24.5",
     "node-cron": "^4.6.0",
     "reflect-metadata": "^0.2.2",

@@ -25,4 +25,5 @@ WORKDIR /app
 COPY --chown=node:node --from=deps /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist
 COPY --chown=node:node --from=build /app/package.json ./
+COPY --chown=node:node service_account_credentials.json /app/service_account_credentials.json
 CMD [ "node", "/app/dist/index.js" ]
