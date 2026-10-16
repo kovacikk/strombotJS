@@ -1,5 +1,5 @@
 import DataSource from "../data_source";
-import { In } from "typeorm";
+import { In, MoreThan } from "typeorm";
 import { Cat } from "./entities/Cat";
 import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
@@ -87,6 +87,22 @@ export async function getMemes(): Promise<Meme[]> {
 }
 
 // User stuff
+export async function getOrCreateUser(userId: string): Promise<User> {
+  let userEntry = await getUser(userId);
+
+  // Add user to user database if not present
+  if (!userEntry) {
+    const userPayload = {
+      id: userId,
+      stats: {},
+    } as User;
+
+    userEntry = await createUser(userPayload);
+  }
+
+  return userEntry;
+}
+
 export async function getUser(userId: string): Promise<User | null> {
   const userRepository = DataSource.getRepository(User);
 
@@ -102,7 +118,7 @@ export async function getUser(userId: string): Promise<User | null> {
   return user;
 }
 
-export async function createUser(user: User): Promise<User> {
+async function createUser(user: User): Promise<User> {
   const userRepository = DataSource.getRepository(User);
 
   const newUser = userRepository.create(user);
@@ -118,4 +134,28 @@ export async function incrementCommandStat(
   const userCommandStatsRepository = DataSource.getRepository(UserCommandStats);
 
   await userCommandStatsRepository.increment({ user }, stat, 1);
+}
+
+export async function incrementCancel(
+  user: User,
+  amount: number,
+): Promise<void> {
+  const userRepository = DataSource.getRepository(User);
+
+  await userRepository.increment({ id: user.id }, "cancels", amount);
+}
+
+export async function getCancels(): Promise<User[]> {
+  const userRepository = DataSource.getRepository(User);
+
+  const users = userRepository.find({
+    where: {
+      cancels: MoreThan(0),
+    },
+    order: {
+      cancels: "DESC",
+    },
+  });
+
+  return users;
 }

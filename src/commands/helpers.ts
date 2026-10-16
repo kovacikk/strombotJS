@@ -28,7 +28,7 @@ export function getEmbedPages(
     const start = i * batchSize;
 
     const description = options?.numbered
-      ? batch.map((item, i) => `**${start + i + 1}.** ${item}`).join("\n")
+      ? batch.map((item, i) => `${start + i + 1}. ${item}`).join("\n")
       : batch.join("\n");
 
     const embed = new EmbedBuilder()

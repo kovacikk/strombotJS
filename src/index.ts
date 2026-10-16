@@ -7,7 +7,14 @@ import { Client, GatewayIntentBits } from "discord.js";
 import allEvents from "./events/index.js";
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN ?? "";
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
 (async () => {
   await DataSource.initialize();
