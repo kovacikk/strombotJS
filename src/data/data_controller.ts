@@ -3,6 +3,8 @@ import { In } from "typeorm";
 import { Cat } from "./entities/Cat";
 import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
+import { User } from "./entities/User";
+import { UserCommandStats } from "./entities/UserCommandStats";
 
 type GetOptions = {
   contains?: string;
@@ -82,4 +84,38 @@ export async function getMemes(): Promise<Meme[]> {
   const allMemes: Meme[] = await memeRepository.find();
 
   return allMemes;
+}
+
+// User stuff
+export async function getUser(userId: string): Promise<User | null> {
+  const userRepository = DataSource.getRepository(User);
+
+  const user = await userRepository.findOne({
+    where: {
+      id: userId,
+    },
+    relations: {
+      stats: true,
+    },
+  });
+
+  return user;
+}
+
+export async function createUser(user: User): Promise<User> {
+  const userRepository = DataSource.getRepository(User);
+
+  const newUser = userRepository.create(user);
+  const savedUser = await userRepository.save(newUser);
+
+  return savedUser;
+}
+
+export async function incrementCommandStat(
+  user: User,
+  stat: string,
+): Promise<void> {
+  const userCommandStatsRepository = DataSource.getRepository(UserCommandStats);
+
+  await userCommandStatsRepository.increment({ user }, stat, 1);
 }

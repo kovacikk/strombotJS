@@ -2,6 +2,7 @@ import type { DiscordEvent } from "../types.js";
 import { Events, MessageFlags } from "discord.js";
 import type { Interaction, CacheType } from "discord.js";
 import { getCommandMap } from "../helpers.js";
+import { logCommand } from "../log/log_controller.js";
 
 const commandMap = getCommandMap();
 
@@ -18,6 +19,9 @@ const InteractionCreate: DiscordEvent = {
       );
       return;
     }
+
+    // Log command
+    await logCommand(interaction.user, command);
 
     try {
       console.log(`Running command ${interaction.commandName}`);

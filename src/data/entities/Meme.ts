@@ -17,7 +17,7 @@ export class Meme {
   path: string;
 
   @Column({ type: "int", default: 0 })
-  uses: Number;
+  uses: number;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;
