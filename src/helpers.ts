@@ -4,7 +4,10 @@ import {
   SlashCommandBuilder,
   SlashCommandStringOption,
 } from "discord.js";
-import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
+import type {
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  SlashCommandBooleanOption,
+} from "discord.js";
 
 import allCommands from "./commands/index.js";
 
@@ -35,10 +38,19 @@ export function buildCommands(
       .setDescription(command.description);
 
     for (const option of command.options ?? []) {
-      if (option.type === ApplicationCommandOptionType.String) {
-        slashCommand.addStringOption(option.option as SlashCommandStringOption);
+      switch (option.type) {
+        case ApplicationCommandOptionType.String:
+          slashCommand.addStringOption(
+            option.option as SlashCommandStringOption,
+          );
+          break;
+        case ApplicationCommandOptionType.Boolean:
+          slashCommand.addBooleanOption(
+            option.option as SlashCommandBooleanOption,
+          );
+          break;
+        //...add as needed
       }
-      //...add as needed
     }
 
     if (slashCommand) {

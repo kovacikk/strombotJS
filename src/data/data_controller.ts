@@ -26,12 +26,20 @@ export async function getBulborb(
   return bulborb;
 }
 
-export async function getBulborbs(): Promise<Bulborb[]> {
+export async function getBulborbs(options?: GetOptions): Promise<Bulborb[]> {
+  const { contains } = options ?? {};
+
   const bulborbRepository = DataSource.getRepository(Bulborb);
 
-  const allBulborbs: Bulborb[] = await bulborbRepository.find();
+  let query = bulborbRepository.createQueryBuilder("bulborb");
 
-  return allBulborbs;
+  if (contains) {
+    query = query.where("bulborb.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("bulborb.name");
+
+  const bulborbs = await query.getMany();
+  return bulborbs;
 }
 
 export async function getBulborbsByName(names: string[]): Promise<Bulborb[]> {
