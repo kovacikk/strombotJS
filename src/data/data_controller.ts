@@ -10,6 +10,7 @@ type GetOptions = {
   contains?: string;
 };
 
+// Bulborb Stuff
 export async function getBulborb(
   options?: GetOptions,
 ): Promise<Bulborb | null> {
@@ -70,20 +71,122 @@ export async function deleteBulborbs(bulborbs: string[]): Promise<void> {
   });
 }
 
-export async function getCats(): Promise<Cat[]> {
-  const catsRepository = DataSource.getRepository(Cat);
+// Cat Stuff
+export async function getCat(options?: GetOptions): Promise<Cat | null> {
+  const { contains } = options ?? {};
 
-  const allCats: Cat[] = await catsRepository.find();
+  const catRepository = DataSource.getRepository(Cat);
 
-  return allCats;
+  let query = catRepository.createQueryBuilder("cat");
+
+  if (contains) {
+    query = query.where("cat.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("RAND()");
+
+  const cat = await query.getOne();
+  return cat;
 }
 
-export async function getMemes(): Promise<Meme[]> {
+export async function getCats(options?: GetOptions): Promise<Cat[]> {
+  const { contains } = options ?? {};
+
+  const catRepository = DataSource.getRepository(Cat);
+
+  let query = catRepository.createQueryBuilder("cat");
+
+  if (contains) {
+    query = query.where("cat.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("cat.name");
+
+  const cats = await query.getMany();
+  return cats;
+}
+
+export async function getCatsByName(names: string[]): Promise<Cat[]> {
+  const catRepository = DataSource.getRepository(Cat);
+
+  const cats: Cat[] = await catRepository.find({
+    where: {
+      name: In(names),
+    },
+  });
+
+  return cats;
+}
+
+export async function insertCats(cats: Cat[]): Promise<void> {
+  const catRepository = DataSource.getRepository(Cat);
+
+  await catRepository.save(cats);
+}
+
+export async function deleteCats(cats: string[]): Promise<void> {
+  const catRepository = DataSource.getRepository(Cat);
+
+  await catRepository.delete({
+    name: In(cats),
+  });
+}
+
+// Meme Stuff
+export async function getMeme(options?: GetOptions): Promise<Meme | null> {
+  const { contains } = options ?? {};
+
   const memeRepository = DataSource.getRepository(Meme);
 
-  const allMemes: Meme[] = await memeRepository.find();
+  let query = memeRepository.createQueryBuilder("meme");
 
-  return allMemes;
+  if (contains) {
+    query = query.where("meme.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("RAND()");
+
+  const meme = await query.getOne();
+  return meme;
+}
+
+export async function getMemes(options?: GetOptions): Promise<Meme[]> {
+  const { contains } = options ?? {};
+
+  const memeRepository = DataSource.getRepository(Meme);
+
+  let query = memeRepository.createQueryBuilder("meme");
+
+  if (contains) {
+    query = query.where("meme.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("meme.name");
+
+  const memes = await query.getMany();
+  return memes;
+}
+
+export async function getMemesByName(names: string[]): Promise<Meme[]> {
+  const memeRepository = DataSource.getRepository(Meme);
+
+  const memes: Meme[] = await memeRepository.find({
+    where: {
+      name: In(names),
+    },
+  });
+
+  return memes;
+}
+
+export async function insertMemes(memes: Meme[]): Promise<void> {
+  const memeRepository = DataSource.getRepository(Meme);
+
+  await memeRepository.save(memes);
+}
+
+export async function deleteMemes(memes: string[]): Promise<void> {
+  const memeRepository = DataSource.getRepository(Meme);
+
+  await memeRepository.delete({
+    name: In(memes),
+  });
 }
 
 // User stuff

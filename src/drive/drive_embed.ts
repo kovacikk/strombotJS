@@ -3,7 +3,7 @@ import {
   ColorResolvable,
   ChatInputCommandInteraction,
   CacheType,
-} from "discord.js"; // Adjust import based on your framework
+} from "discord.js";
 import { progressString } from "../commands/helpers";
 
 export type driveItem = {
@@ -57,17 +57,21 @@ export class DriveEmbedManager {
     }
   }
 
-  /**
-   * Updates the current operational state of the drive manager
-   */
+  public async finish(state: driveState): Promise<void> {
+    this.setState(state);
+
+    // Wait full cooldown to guarantee this sets
+    await new Promise((resolve) => setTimeout(resolve, this.cooldownMs));
+    await this.refresh();
+  }
+
+  // Set overall drive state
   public setState(state: driveState): this {
     this.state = state;
     return this;
   }
 
-  /**
-   * Updates the item currently being processed (or clears it)
-   */
+  // Updates the currently downloading item
   public setCurrentItem(item: driveItem | undefined): this {
     this.currentItem = item;
     return this;
@@ -84,9 +88,7 @@ export class DriveEmbedManager {
     return this;
   }
 
-  /**
-   * Pushes the current item to the completed list and clears the current item active track
-   */
+  // Pushes the current item and queues up the next one
   public completeCurrentItem(nextItem?: driveItem): this {
     if (this.currentItem) {
       this.completedItems.push(this.currentItem);
@@ -95,15 +97,12 @@ export class DriveEmbedManager {
     return this;
   }
 
-  /**
-   * Generates the visual layout map and configurations for the state
-   */
+  // Gets the title and color based on title
   private getMetadata(): { title: string; color: ColorResolvable } {
     switch (this.state) {
       case driveState.Start:
         return { title: "Checking Drive", color: "Default" };
       case driveState.Downloading:
-        // Fallback title if currentItem hasn't been set yet during download phase
         const name = this.currentItem ? `${this.currentItem.name}s` : "Files";
         return { title: `Downloading ${name}`, color: "Yellow" };
       case driveState.Complete:
@@ -113,13 +112,10 @@ export class DriveEmbedManager {
     }
   }
 
-  /**
-   * Compiles the internal state into a structured Discord Embed
-   */
+  // Puts together the embed, generates the descriptions based on items
   public build(): EmbedBuilder {
     const { title, color } = this.getMetadata();
 
-    // Build descriptive string array for completed items
     const descriptions = this.completedItems.map((item) => {
       const plural = item.downloaded > 1 ? "s" : "";
       const nameLower = item.name.toLowerCase();
@@ -138,7 +134,6 @@ export class DriveEmbedManager {
       return description;
     });
 
-    // Only append downloading data if we are actively downloading AND an item exists
     if (this.state === driveState.Downloading && this.currentItem) {
       let description = `**${this.currentItem.name}s**`;
 
@@ -147,7 +142,6 @@ export class DriveEmbedManager {
 
       descriptions.push(description);
     } else if (this.state === driveState.Downloading && !this.currentItem) {
-      // Optional placeholder string for the in-between stage transition
       descriptions.push(`*Preparing next category...*`);
     }
 
@@ -158,7 +152,7 @@ export class DriveEmbedManager {
 
     return new EmbedBuilder()
       .setTitle(title)
-      .setDescription(description) // Clean spacing between block groups
+      .setDescription(description)
       .setColor(color);
   }
 }
