@@ -6,7 +6,24 @@ import {
   EmbedBuilder,
   ChatInputCommandInteraction,
   CacheType,
+  ColorResolvable,
 } from "discord.js";
+
+export function progressString(
+  current: number,
+  total: number,
+  length: number = 10,
+) {
+  const loaded = Math.round((current / total) * length);
+
+  let progress = "";
+
+  for (let i = 0; i < length; i++) {
+    progress += loaded > i ? "█" : "░";
+  }
+
+  return progress;
+}
 
 export function getEmbedPages(
   title: string,

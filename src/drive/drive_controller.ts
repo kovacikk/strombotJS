@@ -1,5 +1,7 @@
 import { google, drive_v3 } from "googleapis";
 import { GoogleAuth } from "googleapis-common";
+import { ChatInputCommandInteraction, CacheType } from "discord.js";
+import { DriveEmbedManager } from "./drive_embed";
 import * as fs from "fs";
 
 const SCOPES = ["https://www.googleapis.com/auth/drive"];
@@ -182,17 +184,28 @@ async function deleteFiles(files: DriveFile[]) {
 export async function downloadAndEvictFiles(
   files: DriveFile[],
   mediaPath: string,
-): Promise<{
-  success: DriveFile[];
-  fail: DriveFile[];
-}> {
-  const downloadedFiles = await downloadFiles(files, mediaPath);
-  const deletedFiles = await evictFiles(downloadedFiles);
+  driveEmbed: DriveEmbedManager,
+): Promise<void> {
+  for (const file of files) {
+    try {
+      driveEmbed.updateProgress(file.name, false);
+      await driveEmbed.refresh();
 
-  return {
-    success: deletedFiles,
-    fail: files.filter((file) => !deletedFiles.includes(file)),
-  };
+      const download = await downloadFiles([file], mediaPath);
+      if (download.length <= 0) {
+        continue;
+      }
+
+      const eviction = await evictFiles([file]);
+      if (eviction.length <= 0) {
+        continue;
+      }
+
+      driveEmbed.updateProgress(file.name);
+    } catch (error) {
+      continue;
+    }
+  }
 }
 
 function streamToFile(

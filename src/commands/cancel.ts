@@ -13,6 +13,7 @@ import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 const Cancel: DiscordCommand = {
   name: "cancel",
   description: "Cancel someone",
+  log: true,
   options: [
     {
       type: ApplicationCommandOptionType.Boolean,

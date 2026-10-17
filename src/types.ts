@@ -8,6 +8,7 @@ import type { CacheType, Client } from "discord.js";
 export type DiscordCommand = {
   name: string;
   description: string;
+  log: boolean;
   options?: {
     type: ApplicationCommandOptionType;
     option: ApplicationCommandOptionBase;

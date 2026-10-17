@@ -11,6 +11,7 @@ import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 const Bulborb: DiscordCommand = {
   name: "bulborb",
   description: "Get a random bulborb",
+  log: true,
   options: [
     {
       type: ApplicationCommandOptionType.String,

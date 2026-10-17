@@ -21,7 +21,9 @@ const InteractionCreate: DiscordEvent = {
     }
 
     // Log command
-    await logCommand(interaction.user, command);
+    if (command.log) {
+      await logCommand(interaction.user, command);
+    }
 
     try {
       console.log(`Running command ${interaction.commandName}`);
