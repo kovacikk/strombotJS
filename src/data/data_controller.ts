@@ -5,6 +5,9 @@ import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
 import { User } from "./entities/User";
 import { UserCommandStats } from "./entities/UserCommandStats";
+import { Weevil } from "./entities/Weevil";
+import { DayMeme } from "./entities/DayMeme";
+import { DayType } from "../media/dayMemes/day_meme_controller";
 
 type GetOptions = {
   contains?: string;
@@ -186,6 +189,132 @@ export async function deleteMemes(memes: string[]): Promise<void> {
 
   await memeRepository.delete({
     name: In(memes),
+  });
+}
+
+// Weevil Stuff
+export async function getWeevil(options?: GetOptions): Promise<Weevil | null> {
+  const { contains } = options ?? {};
+
+  const weevilRepository = DataSource.getRepository(Weevil);
+
+  let query = weevilRepository.createQueryBuilder("weevil");
+
+  if (contains) {
+    query = query.where("weevil.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("RAND()");
+
+  const weevil = await query.getOne();
+  return weevil;
+}
+
+export async function getWeevils(options?: GetOptions): Promise<Weevil[]> {
+  const { contains } = options ?? {};
+
+  const weevilRepository = DataSource.getRepository(Weevil);
+
+  let query = weevilRepository.createQueryBuilder("weevil");
+
+  if (contains) {
+    query = query.where("weevil.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.orderBy("weevil.name");
+
+  const weevils = await query.getMany();
+  return weevils;
+}
+
+export async function getWeevilsByName(names: string[]): Promise<Weevil[]> {
+  const weevilRepository = DataSource.getRepository(Weevil);
+
+  const weevils: Weevil[] = await weevilRepository.find({
+    where: {
+      name: In(names),
+    },
+  });
+
+  return weevils;
+}
+
+export async function insertWeevils(weevils: Weevil[]): Promise<void> {
+  const weevilRepository = DataSource.getRepository(Weevil);
+
+  await weevilRepository.save(weevils);
+}
+
+export async function deleteWeevils(weevils: string[]): Promise<void> {
+  const weevilRepository = DataSource.getRepository(Weevil);
+
+  await weevilRepository.delete({
+    name: In(weevils),
+  });
+}
+
+// Day Meme Stuff
+export async function getDayMeme(
+  type: DayType,
+  options?: GetOptions,
+): Promise<DayMeme | null> {
+  const { contains } = options ?? {};
+
+  const dayMemeRepository = DataSource.getRepository(DayMeme);
+
+  let query = dayMemeRepository.createQueryBuilder("dayMeme");
+
+  if (contains) {
+    query = query.where("dayMeme.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query.andWhere("dayMeme.type = :type", { type }).orderBy("RAND()");
+
+  const dayMeme = await query.getOne();
+  return dayMeme;
+}
+
+export async function getDayMemes(
+  type: DayType,
+  options?: GetOptions,
+): Promise<DayMeme[]> {
+  const { contains } = options ?? {};
+
+  const dayMemeRepository = DataSource.getRepository(DayMeme);
+
+  let query = dayMemeRepository.createQueryBuilder("dayMeme");
+
+  if (contains) {
+    query = query.where("dayMeme.name LIKE :name", { name: `%${contains}%` });
+  }
+  query = query
+    .andWhere("dayMeme.type = :type", { type })
+    .orderBy("dayMeme.name");
+
+  const dayMemes = await query.getMany();
+  return dayMemes;
+}
+
+export async function getDayMemesByName(names: string[]): Promise<DayMeme[]> {
+  const dayMemeRepository = DataSource.getRepository(DayMeme);
+
+  const dayMemes: DayMeme[] = await dayMemeRepository.find({
+    where: {
+      name: In(names),
+    },
+  });
+
+  return dayMemes;
+}
+
+export async function insertDayMemes(dayMemes: DayMeme[]): Promise<void> {
+  const dayMemeRepository = DataSource.getRepository(DayMeme);
+
+  await dayMemeRepository.save(dayMemes);
+}
+
+export async function deleteDayMemes(dayMemes: string[]): Promise<void> {
+  const dayMemeRepository = DataSource.getRepository(DayMeme);
+
+  await dayMemeRepository.delete({
+    name: In(dayMemes),
   });
 }
 

@@ -42,8 +42,10 @@ const PERSONAL_EMAIL = process.env.PERSONAL_EMAIL ?? "";
       });
     }
 
+    let dayMemeId = "";
+
     // Create child folders
-    for (const folder of ["Bulborbs", "Memes", "Cats"]) {
+    for (const folder of ["Bulborbs", "Memes", "Cats", "Weevils", "DayMemes"]) {
       let existingFolder = await getFolderIdByName(folder, parentId);
       let folderId: string;
 
@@ -58,9 +60,45 @@ const PERSONAL_EMAIL = process.env.PERSONAL_EMAIL ?? "";
           },
           fields: "id",
         });
+        folderId = response.data.id ?? "";
+      }
+      if (folder == "DayMemes") {
+        dayMemeId = folderId;
       }
 
-      console.log(`Sub folder ${folder} found: ${parentId}`);
+      console.log(`Sub folder ${folder} found: ${folderId}`);
+    }
+
+    if (dayMemeId) {
+      // Create child folders of DayMemes
+      for (const folder of [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ]) {
+        let existingFolder = await getFolderIdByName(folder, dayMemeId);
+        let folderId: string;
+
+        if (existingFolder) {
+          folderId = existingFolder;
+        } else {
+          const response = await drive.files.create({
+            requestBody: {
+              name: folder,
+              mimeType: "application/vnd.google-apps.folder",
+              parents: [dayMemeId],
+            },
+            fields: "id",
+          });
+          folderId = response.data.id ?? "";
+        }
+
+        console.log(`Sub folder ${folder} found: ${folderId}`);
+      }
     }
   }
 })();

@@ -2,6 +2,8 @@ import type { DiscordCommand } from "../types.js";
 import { checkDrive as checkDriveBulborb } from "../media/bulborbs/bulborb_controller.js";
 import { checkDrive as checkDriveCat } from "../media/cats/cat_controller.js";
 import { checkDrive as checkDriveMeme } from "../media/memes/meme_controller.js";
+import { checkDriveAll as checkDriveDayMeme } from "../media/dayMemes/day_meme_controller.js";
+import { checkDrive as checkDriveWeevil } from "../media/weevils/weevil_controller.js";
 import { DriveEmbedManager, driveState } from "../drive/drive_embed.js";
 import {
   ApplicationCommandOptionType,
@@ -39,6 +41,8 @@ const Drive: DiscordCommand = {
     await checkDriveBulborb(driveEmbed);
     await checkDriveCat(driveEmbed);
     await checkDriveMeme(driveEmbed);
+    await checkDriveDayMeme(driveEmbed);
+    await checkDriveWeevil(driveEmbed);
 
     await driveEmbed.finish(driveState.Complete);
   },
