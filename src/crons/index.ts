@@ -1,6 +1,6 @@
 import type { DiscordCron } from "../types.js";
-import TestPing from "./test_ping.js";
+import WeevilWednesday from "./weevil_wednesday.js";
 
-const allCrons: DiscordCron[] = [];
+const allCrons: DiscordCron[] = [WeevilWednesday];
 
 export default allCrons;
