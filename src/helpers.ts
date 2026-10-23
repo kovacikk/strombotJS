@@ -7,6 +7,7 @@ import {
 import type {
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandBooleanOption,
+  SlashCommandMentionableOption,
 } from "discord.js";
 
 import allCommands from "./commands/index.js";
@@ -47,6 +48,11 @@ export function buildCommands(
         case ApplicationCommandOptionType.Boolean:
           slashCommand.addBooleanOption(
             option.option as SlashCommandBooleanOption,
+          );
+          break;
+        case ApplicationCommandOptionType.Mentionable:
+          slashCommand.addMentionableOption(
+            option.option as SlashCommandMentionableOption,
           );
           break;
         //...add as needed

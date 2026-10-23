@@ -26,4 +26,10 @@ export class UserCommandStats {
 
   @Column({ type: "int", default: 0 })
   daymeme: number;
+
+  @Column({ type: "int", default: 0 })
+  goodnight: number;
+
+  @Column({ type: "int", default: 0 })
+  stat: number;
 }
