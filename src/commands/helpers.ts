@@ -30,6 +30,7 @@ export function getEmbedPages(
   items: string[],
   options?: {
     chunkSize?: number;
+    emphasizeFirst?: boolean;
     numbered?: boolean;
   },
 ): EmbedBuilder[] {
@@ -44,9 +45,13 @@ export function getEmbedPages(
   for (const [i, batch] of batches.entries()) {
     const start = i * batchSize;
 
-    const description = options?.numbered
-      ? batch.map((item, i) => `${start + i + 1}. ${item}`).join("\n")
-      : batch.join("\n");
+    const description = batch
+      .map((item, i) => {
+        let content = options?.numbered ? `${start + i + 1}. ${item}` : item;
+
+        return options?.emphasizeFirst && i == 0 ? `**${content}**` : content;
+      })
+      .join("\n");
 
     const embed = new EmbedBuilder()
       .setTitle(title)
