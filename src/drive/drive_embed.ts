@@ -6,11 +6,12 @@ import {
 } from "discord.js";
 import { progressString } from "../commands/helpers";
 
-export type driveItem = {
+export type DriveItem = {
   name: string; // Bulborb
   downloading: number; // 20
   downloaded: number; // 10
   duplicates: number; // 1
+  largeFiles: number; // 0
   cursor?: string; // Angry Bulborb
 };
 
@@ -22,8 +23,8 @@ export enum driveState {
 
 export class DriveEmbedManager {
   private state: driveState;
-  private currentItem: driveItem | undefined;
-  private completedItems: driveItem[];
+  private currentItem: DriveItem | undefined;
+  private completedItems: DriveItem[];
 
   private interaction: ChatInputCommandInteraction<CacheType>;
 
@@ -33,8 +34,8 @@ export class DriveEmbedManager {
   constructor(
     interaction: ChatInputCommandInteraction<CacheType>,
     initialState: driveState,
-    currentItem?: driveItem,
-    completedItems: driveItem[] = [],
+    currentItem?: DriveItem,
+    completedItems: DriveItem[] = [],
   ) {
     this.interaction = interaction;
     this.state = initialState;
@@ -72,7 +73,7 @@ export class DriveEmbedManager {
   }
 
   // Updates the currently downloading item
-  public setCurrentItem(item: driveItem | undefined): this {
+  public setCurrentItem(item: DriveItem | undefined): this {
     this.currentItem = item;
     return this;
   }
@@ -89,7 +90,7 @@ export class DriveEmbedManager {
   }
 
   // Pushes the current item and queues up the next one
-  public completeCurrentItem(nextItem?: driveItem): this {
+  public completeCurrentItem(nextItem?: DriveItem): this {
     if (this.currentItem) {
       this.completedItems.push(this.currentItem);
     }
@@ -128,7 +129,11 @@ export class DriveEmbedManager {
           : `\nNo ${nameLower}s to download`;
 
       if (item.duplicates > 0) {
-        description += `\n${item.duplicates} existing ${nameLower}${plural} ignored`;
+        description += `\n${item.duplicates} ${nameLower}${plural} rejected due to duplicate name`;
+      }
+
+      if (item.largeFiles > 0) {
+        description += `\n${item.largeFiles} ${nameLower}${plural} rejected due to size limits`;
       }
 
       return description;

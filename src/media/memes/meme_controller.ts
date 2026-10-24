@@ -6,9 +6,10 @@ import { getMemesByName } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
-  driveItem,
+  DriveItem,
   driveState,
 } from "../../drive/drive_embed";
+import { MAX_FILE_SIZE } from "../media_types";
 
 export const MEME_PATH = "/app/media/memes/";
 const MEME_DRIVE_FOLDER_ID = "1wd_KRGLDe7N3taKclTwUERDZrpOCSWOo";
@@ -56,6 +57,17 @@ export async function checkDrive(
   // Get New Files in Google Drive
   const files = await listFiles(MEME_DRIVE_FOLDER_ID);
 
+  // Reject any files bigger than 20MB
+  const largeFiles = files.filter((file) => {
+    const sizeInBytes = file.size ? Number(file.size) : 0;
+    return sizeInBytes > MAX_FILE_SIZE;
+  });
+  const largeFilesSet = new Set();
+  for (const largeFile of largeFiles) {
+    largeFilesSet.add(largeFile.name);
+  }
+  console.log(`${largeFiles.length} large file(s) found`);
+
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
   const existingMemes = await getMemesByName(fileNames);
@@ -67,14 +79,18 @@ export async function checkDrive(
 
   // Filter out those matches
   const newFiles = files.filter(
-    (file) => file?.name && !existingSet.has(file?.name),
+    (file) =>
+      file?.name &&
+      !existingSet.has(file?.name) &&
+      !largeFilesSet.has(file?.name),
   );
 
-  let driveItem: driveItem = {
+  let driveItem: DriveItem = {
     name: "Meme",
     downloading: newFiles.length,
     downloaded: 0,
     duplicates: existingMemes.length,
+    largeFiles: largeFiles.length,
   };
   driveEmbed.setState(driveState.Downloading).setCurrentItem(driveItem);
 
@@ -90,6 +106,7 @@ export async function checkDrive(
   return {
     name: "Memes",
     duplicates: existingMemes.flatMap((meme) => meme.name),
+    largeFiles: largeFiles.flatMap((largeFile) => largeFile.name),
     new: newFiles.map((file) => file.name),
   };
 }

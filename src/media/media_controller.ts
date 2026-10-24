@@ -37,6 +37,7 @@ export const syncMap: Partial<Record<Category | DayCategory, () => void>> = {
 export type DriveResults = {
   name: string;
   duplicates: string[];
+  largeFiles: string[];
   new: string[];
 };
 

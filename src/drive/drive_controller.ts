@@ -10,6 +10,7 @@ const CREDENTIALS_PATH = "/app/service_account_credentials.json";
 export type DriveFile = {
   id: string;
   name: string;
+  size: string;
   mimeType: string;
   parent: string;
 };
@@ -71,7 +72,7 @@ export async function listFiles(folderId: string): Promise<DriveFile[]> {
     do {
       const listParams: drive_v3.Params$Resource$Files$List = {
         q: `'${folderId}' in parents and trashed = false and mimeType != 'application/vnd.google-apps.folder' and trashed = false`,
-        fields: "nextPageToken, files(id, name, mimeType, parents)",
+        fields: "nextPageToken, files(id, name, size, mimeType, parents)",
         pageSize: 1000,
       };
 

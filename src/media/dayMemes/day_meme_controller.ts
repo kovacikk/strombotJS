@@ -10,10 +10,11 @@ import { getDayMemesByName } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
-  driveItem,
+  DriveItem,
   driveState,
 } from "../../drive/drive_embed";
 import { DayCategory } from "../media_types";
+import { MAX_FILE_SIZE } from "../media_types";
 
 export const dayDriveFolderIds: Record<DayCategory, string> = {
   [DayCategory.Monday]: "1ozl3MJU3cmXAJXfUjLK-mfbGvQJXnIfF",
@@ -87,6 +88,17 @@ export async function checkDrive(
   // Get New Files in Google Drive
   const files = await listFiles(DAYMEME_DRIVE_FOLDER_ID);
 
+  // Reject any files bigger than 20MB
+  const largeFiles = files.filter((file) => {
+    const sizeInBytes = file.size ? Number(file.size) : 0;
+    return sizeInBytes > MAX_FILE_SIZE;
+  });
+  const largeFilesSet = new Set();
+  for (const largeFile of largeFiles) {
+    largeFilesSet.add(largeFile.name);
+  }
+  console.log(`${largeFiles.length} large file(s) found`);
+
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
   const existingDayMemes = await getDayMemesByName(fileNames);
@@ -98,14 +110,18 @@ export async function checkDrive(
 
   // Filter out those matches
   const newFiles = files.filter(
-    (file) => file?.name && !existingSet.has(file?.name),
+    (file) =>
+      file?.name &&
+      !existingSet.has(file?.name) &&
+      !existingSet.has(file?.name),
   );
 
-  let driveItem: driveItem = {
+  let driveItem: DriveItem = {
     name: `DayMeme - ${type}`,
     downloading: newFiles.length,
     downloaded: 0,
     duplicates: existingDayMemes.length,
+    largeFiles: largeFiles.length,
   };
   driveEmbed.setState(driveState.Downloading).setCurrentItem(driveItem);
 
@@ -123,6 +139,7 @@ export async function checkDrive(
   return {
     name: `DayMemes - ${type}`,
     duplicates: existingDayMemes.flatMap((dayMeme) => dayMeme.name),
+    largeFiles: largeFiles.flatMap((largFile) => largFile.name),
     new: newFiles.map((file) => file.name),
   };
 }
@@ -132,19 +149,26 @@ export async function checkDriveAll(
 ): Promise<DriveEmbedManager> {
   let totalNewFiles = 0;
   let totalDuplicates = 0;
+  let totalLargeFiles = 0;
 
   for (const type of Object.values(DayCategory)) {
-    const { duplicates, new: newFiles } = await checkDrive(type, driveEmbed);
+    const {
+      duplicates,
+      largeFiles,
+      new: newFiles,
+    } = await checkDrive(type, driveEmbed);
 
     totalNewFiles += newFiles.length;
     totalDuplicates += duplicates.length;
+    totalLargeFiles += largeFiles.length;
   }
 
-  let driveItem: driveItem = {
+  let driveItem: DriveItem = {
     name: `DayMeme`,
     downloading: totalNewFiles,
     downloaded: totalNewFiles,
     duplicates: totalDuplicates,
+    largeFiles: totalLargeFiles,
   };
   driveEmbed.setCurrentItem(driveItem);
 
