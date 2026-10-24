@@ -13,39 +13,30 @@ import {
   driveItem,
   driveState,
 } from "../../drive/drive_embed";
+import { DayCategory } from "../media_types";
 
-export enum DayType {
-  Monday = "monday",
-  Tuesday = "tuesday",
-  Wednesday = "wednesday",
-  Thursday = "thursday",
-  Friday = "friday",
-  Saturday = "saturday",
-  Sunday = "sunday",
-}
-
-export const dayDriveFolderIds: Record<DayType, string> = {
-  [DayType.Monday]: "1ozl3MJU3cmXAJXfUjLK-mfbGvQJXnIfF",
-  [DayType.Tuesday]: "1vhSqHe1tlx0vwnKQ9lKURHcGDrshogH6",
-  [DayType.Wednesday]: "15YLBs3uIS0OYu8uKzjn59xg5XmAaLdfo",
-  [DayType.Thursday]: "1Svd3hIVMRVE0VPZL9xamrCaxSMfjO56l",
-  [DayType.Friday]: "1nX2MFzjt92QgjGx0xJITIMTAibooGPVy",
-  [DayType.Saturday]: "1aofAFtvGYZynfeQ5DZdLxZsIqckjbNlv",
-  [DayType.Sunday]: "1RHNDCCO8buq9Ml1XeBFMKbzg1ih3XGie",
+export const dayDriveFolderIds: Record<DayCategory, string> = {
+  [DayCategory.Monday]: "1ozl3MJU3cmXAJXfUjLK-mfbGvQJXnIfF",
+  [DayCategory.Tuesday]: "1vhSqHe1tlx0vwnKQ9lKURHcGDrshogH6",
+  [DayCategory.Wednesday]: "15YLBs3uIS0OYu8uKzjn59xg5XmAaLdfo",
+  [DayCategory.Thursday]: "1Svd3hIVMRVE0VPZL9xamrCaxSMfjO56l",
+  [DayCategory.Friday]: "1nX2MFzjt92QgjGx0xJITIMTAibooGPVy",
+  [DayCategory.Saturday]: "1aofAFtvGYZynfeQ5DZdLxZsIqckjbNlv",
+  [DayCategory.Sunday]: "1RHNDCCO8buq9Ml1XeBFMKbzg1ih3XGie",
 };
 
-export const dayMediaPaths: Record<DayType, string> = {
-  [DayType.Monday]: "/app/media/day_memes/monday/",
-  [DayType.Tuesday]: "/app/media/day_memes/tuesday/",
-  [DayType.Wednesday]: "/app/media/day_memes/wednesday/",
-  [DayType.Thursday]: "/app/media/day_memes/thursday/",
-  [DayType.Friday]: "/app/media/day_memes/friday/",
-  [DayType.Saturday]: "/app/media/day_memes/saturday/",
-  [DayType.Sunday]: "/app/media/day_memes/sunday/",
+export const dayMediaPaths: Record<DayCategory, string> = {
+  [DayCategory.Monday]: "/app/media/day_memes/monday/",
+  [DayCategory.Tuesday]: "/app/media/day_memes/tuesday/",
+  [DayCategory.Wednesday]: "/app/media/day_memes/wednesday/",
+  [DayCategory.Thursday]: "/app/media/day_memes/thursday/",
+  [DayCategory.Friday]: "/app/media/day_memes/friday/",
+  [DayCategory.Saturday]: "/app/media/day_memes/saturday/",
+  [DayCategory.Sunday]: "/app/media/day_memes/sunday/",
 };
 
 // Compares files and database to insert new dayMemes and delete old ones
-export async function sync(type: DayType): Promise<void> {
+export async function sync(type: DayCategory): Promise<void> {
   const DAYMEME_PATH = dayMediaPaths[type];
 
   const databaseDayMemes = await getDayMemes(type);
@@ -87,7 +78,7 @@ export async function sync(type: DayType): Promise<void> {
 }
 
 export async function checkDrive(
-  type: DayType,
+  type: DayCategory,
   driveEmbed: DriveEmbedManager,
 ): Promise<DriveResults> {
   const DAYMEME_PATH = dayMediaPaths[type];
@@ -142,7 +133,7 @@ export async function checkDriveAll(
   let totalNewFiles = 0;
   let totalDuplicates = 0;
 
-  for (const type of Object.values(DayType)) {
+  for (const type of Object.values(DayCategory)) {
     const { duplicates, new: newFiles } = await checkDrive(type, driveEmbed);
 
     totalNewFiles += newFiles.length;

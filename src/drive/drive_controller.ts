@@ -208,7 +208,7 @@ export async function downloadAndEvictFiles(
   }
 }
 
-function streamToFile(
+export function streamToFile(
   readableStream: any,
   writeStream: fs.WriteStream,
 ): Promise<void> {

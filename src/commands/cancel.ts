@@ -3,7 +3,7 @@ import {
   getCancels,
   getOrCreateUser,
   incrementCancel,
-} from "../data/data_controller.js";
+} from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   SlashCommandBooleanOption,

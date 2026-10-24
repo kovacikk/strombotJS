@@ -6,8 +6,9 @@ import {
 } from "discord.js";
 import type {
   RESTPostAPIChatInputApplicationCommandsJSONBody,
+  SlashCommandAttachmentOption,
   SlashCommandBooleanOption,
-  SlashCommandMentionableOption,
+  SlashCommandUserOption,
 } from "discord.js";
 
 import allCommands from "./commands/index.js";
@@ -50,9 +51,12 @@ export function buildCommands(
             option.option as SlashCommandBooleanOption,
           );
           break;
-        case ApplicationCommandOptionType.Mentionable:
-          slashCommand.addMentionableOption(
-            option.option as SlashCommandMentionableOption,
+        case ApplicationCommandOptionType.User:
+          slashCommand.addUserOption(option.option as SlashCommandUserOption);
+          break;
+        case ApplicationCommandOptionType.Attachment:
+          slashCommand.addAttachmentOption(
+            option.option as SlashCommandAttachmentOption,
           );
           break;
         //...add as needed

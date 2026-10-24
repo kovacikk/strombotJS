@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getCat, getCats } from "../data/data_controller.js";
+import { getCat, getCats } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,

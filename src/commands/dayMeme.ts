@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getDayMeme, getDayMemes } from "../data/data_controller.js";
+import { getDayMeme, getDayMemes } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -7,7 +7,7 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
-import { DayType } from "../media/dayMemes/day_meme_controller.js";
+import { DayCategory } from "../media/media_types.js";
 
 const DayMeme: DiscordCommand = {
   name: "daymeme",
@@ -40,7 +40,7 @@ const DayMeme: DiscordCommand = {
         weekday: "long",
         timeZone: "America/New_York",
       })
-      .toLowerCase() as DayType;
+      .toLowerCase() as DayCategory;
 
     if (list) {
       // List Memes

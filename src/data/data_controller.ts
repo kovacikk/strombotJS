@@ -7,7 +7,7 @@ import { User } from "./entities/User";
 import { UserCommandStats } from "./entities/UserCommandStats";
 import { Weevil } from "./entities/Weevil";
 import { DayMeme } from "./entities/DayMeme";
-import { DayType } from "../media/dayMemes/day_meme_controller";
+import { DayCategory } from "../media/media_types";
 import { SpecialDate } from "./entities/SpecialDate";
 
 type GetOptions = {
@@ -254,7 +254,7 @@ export async function deleteWeevils(weevils: string[]): Promise<void> {
 
 // Day Meme Stuff
 export async function getDayMeme(
-  type: DayType,
+  type: DayCategory,
   options?: GetOptions,
 ): Promise<DayMeme | null> {
   const { contains } = options ?? {};
@@ -273,7 +273,7 @@ export async function getDayMeme(
 }
 
 export async function getDayMemes(
-  type: DayType,
+  type: DayCategory,
   options?: GetOptions,
 ): Promise<DayMeme[]> {
   const { contains } = options ?? {};

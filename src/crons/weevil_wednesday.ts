@@ -1,6 +1,6 @@
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder } from "discord.js";
-import { getWeevil } from "../data/data_controller.js";
+import { getWeevil } from "../data/data_controller";
 
 //const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
 const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";

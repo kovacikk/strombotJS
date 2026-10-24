@@ -4,7 +4,7 @@ import {
   Column,
   CreateDateColumn,
 } from "typeorm";
-import { DayType } from "../../media/dayMemes/day_meme_controller";
+import { DayCategory } from "../../media/media_types";
 
 @Entity()
 export class DayMeme {
@@ -18,7 +18,7 @@ export class DayMeme {
   path: string;
 
   @Column({ type: "varchar" })
-  type: DayType;
+  type: DayCategory;
 
   @Column({ type: "int", default: 0 })
   uses: number;

@@ -5,11 +5,8 @@ import {
 } from "../../data/data_controller";
 import { Weevil } from "../../data/entities/Weevil";
 import { getFileNames } from "../media_controller";
-import {
-  listFiles,
-  downloadAndEvictFiles,
-} from "../../drive/drive_controller.js";
-import { getWeevilsByName } from "../../data/data_controller.js";
+import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
+import { getWeevilsByName } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -17,7 +14,7 @@ import {
   driveState,
 } from "../../drive/drive_embed";
 
-const WEEVIL_PATH = "/app/media/weevils/";
+export const WEEVIL_PATH = "/app/media/weevils/";
 const WEEVIL_DRIVE_FOLDER_ID = "18cz_oR9qUhZhJo1EqeMlDLSfa66MRDGa";
 
 // Compares files and database to insert new weevils and delete old ones

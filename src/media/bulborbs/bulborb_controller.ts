@@ -5,11 +5,8 @@ import {
 } from "../../data/data_controller";
 import { Bulborb } from "../../data/entities/Bulborb";
 import { getFileNames } from "../media_controller";
-import {
-  listFiles,
-  downloadAndEvictFiles,
-} from "../../drive/drive_controller.js";
-import { getBulborbsByName } from "../../data/data_controller.js";
+import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
+import { getBulborbsByName } from "../../data/data_controller";
 import { DriveResults } from "../../media/media_controller";
 import {
   DriveEmbedManager,
@@ -18,7 +15,7 @@ import {
 } from "../../drive/drive_embed";
 import { ChatInputCommandInteraction, CacheType } from "discord.js";
 
-const BULBORB_PATH = "/app/media/bulborbs/";
+export const BULBORB_PATH = "/app/media/bulborbs/";
 const BULBORB_DRIVE_FOLDER_ID = "1AVyX2L8Tp0LFumKGB_aYyxk2sR9cXJS9";
 
 // Compares files and database to insert new bulborbs and delete old ones

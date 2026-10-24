@@ -1,11 +1,8 @@
 import { getMemes, insertMemes, deleteMemes } from "../../data/data_controller";
 import { Meme } from "../../data/entities/Meme";
 import { getFileNames } from "../media_controller";
-import {
-  listFiles,
-  downloadAndEvictFiles,
-} from "../../drive/drive_controller.js";
-import { getMemesByName } from "../../data/data_controller.js";
+import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
+import { getMemesByName } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -13,7 +10,7 @@ import {
   driveState,
 } from "../../drive/drive_embed";
 
-const MEME_PATH = "/app/media/memes/";
+export const MEME_PATH = "/app/media/memes/";
 const MEME_DRIVE_FOLDER_ID = "1wd_KRGLDe7N3taKclTwUERDZrpOCSWOo";
 
 // Compares files and database to insert new memes and delete old ones

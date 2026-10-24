@@ -1,4 +1,4 @@
-import { getBirthdays } from "../data/data_controller.js";
+import { getBirthdays } from "../data/data_controller";
 import { User } from "../data/entities/User.js";
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder, EmbedBuilder } from "discord.js";

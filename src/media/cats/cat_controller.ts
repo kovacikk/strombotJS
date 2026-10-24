@@ -1,11 +1,8 @@
 import { getCats, insertCats, deleteCats } from "../../data/data_controller";
 import { Cat } from "../../data/entities/Cat";
 import { getFileNames } from "../media_controller";
-import {
-  listFiles,
-  downloadAndEvictFiles,
-} from "../../drive/drive_controller.js";
-import { getCatsByName } from "../../data/data_controller.js";
+import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
+import { getCatsByName } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -13,7 +10,7 @@ import {
   driveState,
 } from "../../drive/drive_embed";
 
-const CAT_PATH = "/app/media/cats/";
+export const CAT_PATH = "/app/media/cats/";
 const CAT_DRIVE_FOLDER_ID = "1RyGoPvqWRH9m4xQN02GVvBkez6CHmk7t";
 
 // Compares files and database to insert new cats and delete old ones

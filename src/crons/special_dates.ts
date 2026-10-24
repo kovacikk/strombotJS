@@ -1,4 +1,4 @@
-import { getSpecialDatesByDate } from "../data/data_controller.js";
+import { getSpecialDatesByDate } from "../data/data_controller";
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder, EmbedBuilder } from "discord.js";
 

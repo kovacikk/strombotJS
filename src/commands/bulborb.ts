@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getBulborb, getBulborbs } from "../data/data_controller.js";
+import { getBulborb, getBulborbs } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,

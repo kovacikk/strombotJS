@@ -32,4 +32,7 @@ export class UserCommandStats {
 
   @Column({ type: "int", default: 0 })
   stat: number;
+
+  @Column({ type: "int", default: 0 })
+  upload: number;
 }
