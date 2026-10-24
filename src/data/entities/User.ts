@@ -23,8 +23,11 @@ export class User {
   @Column({ name: "last_name", type: "varchar", nullable: true })
   lastName?: string;
 
-  @Column({ type: "date", nullable: true })
-  birthday?: Date | null;
+  @Column({ type: "int" })
+  birthMonth?: number | null;
+
+  @Column({ type: "int" })
+  birthDay?: number | null;
 
   @Column({ type: "int", default: 0 })
   cancels: number;

@@ -9,6 +9,7 @@ import {
   ApplicationCommandOptionType,
   SlashCommandBooleanOption,
 } from "discord.js";
+import { sync as syncSpecialDays } from "../media/events/special_days/special_days_controller.js";
 
 const DRIVE_LINK = process.env.DRIVE_LINK ?? "";
 
@@ -43,6 +44,9 @@ const Drive: DiscordCommand = {
     await checkDriveMeme(driveEmbed);
     await checkDriveDayMeme(driveEmbed);
     await checkDriveWeevil(driveEmbed);
+
+    // Sync miscellanous
+    await syncSpecialDays();
 
     await driveEmbed.finish(driveState.Complete);
   },

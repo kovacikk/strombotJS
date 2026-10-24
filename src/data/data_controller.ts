@@ -1,5 +1,5 @@
 import DataSource from "../data_source";
-import { In, MoreThan } from "typeorm";
+import { In, MoreThan, Raw } from "typeorm";
 import { Cat } from "./entities/Cat";
 import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
@@ -8,6 +8,7 @@ import { UserCommandStats } from "./entities/UserCommandStats";
 import { Weevil } from "./entities/Weevil";
 import { DayMeme } from "./entities/DayMeme";
 import { DayType } from "../media/dayMemes/day_meme_controller";
+import { SpecialDate } from "./entities/SpecialDate";
 
 type GetOptions = {
   contains?: string;
@@ -390,4 +391,97 @@ export async function getCancels(): Promise<User[]> {
   });
 
   return users;
+}
+
+export async function getBirthdays(birthday: Date): Promise<User[]> {
+  const userRepository = DataSource.getRepository(User);
+
+  const day = Number(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      day: "numeric",
+    }),
+  );
+  const month = Number(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      month: "numeric",
+    }),
+  );
+
+  const user = userRepository.find({
+    where: {
+      birthDay: day,
+      birthMonth: month,
+    },
+  });
+
+  return user;
+}
+
+// Special Dates
+export async function getSpecialDatesByDate(
+  today: Date,
+): Promise<SpecialDate[]> {
+  const specialDateRepository = DataSource.getRepository(SpecialDate);
+
+  const day = Number(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      day: "numeric",
+    }),
+  );
+  const month = Number(
+    new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      month: "numeric",
+    }),
+  );
+
+  const dates = specialDateRepository.find({
+    where: {
+      day,
+      month,
+    },
+  });
+
+  return dates;
+}
+
+export async function getSpecialDates(
+  options?: GetOptions,
+): Promise<SpecialDate[]> {
+  const { contains } = options ?? {};
+
+  const specialDateRepository = DataSource.getRepository(SpecialDate);
+
+  let query = specialDateRepository.createQueryBuilder("special_date");
+
+  if (contains) {
+    query = query.where("special_date.name LIKE :name", {
+      name: `%${contains}%`,
+    });
+  }
+  query = query.orderBy("special_date.name");
+
+  const specialDates = await query.getMany();
+  return specialDates;
+}
+
+export async function insertSpecialDates(
+  specialDates: SpecialDate[],
+): Promise<void> {
+  const specialDateRepository = DataSource.getRepository(SpecialDate);
+
+  await specialDateRepository.save(specialDates);
+}
+
+export async function deleteSpecialDates(
+  specialDates: string[],
+): Promise<void> {
+  const specialDateRepository = DataSource.getRepository(SpecialDate);
+
+  await specialDateRepository.delete({
+    name: In(specialDates),
+  });
 }
