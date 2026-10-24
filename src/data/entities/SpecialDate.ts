@@ -10,10 +10,10 @@ export class SpecialDate {
   @PrimaryGeneratedColumn({ type: "int" })
   id: number;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", unique: true })
   name: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", unique: true })
   path: string;
 
   @Column({ type: "int" })

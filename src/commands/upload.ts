@@ -78,7 +78,7 @@ function buildUploadModal(): ModalBuilder {
   const dayCategoryLabel = new LabelBuilder()
     .setLabel("Day Category")
     .setDescription(
-      "Select what day this file is for. Only select this if this is a day meme.",
+      "Select what day this file is for. Only used if this is a day meme.",
     )
     .setStringSelectMenuComponent(daySelect);
 

@@ -10,10 +10,10 @@ export class Weevil {
   @PrimaryGeneratedColumn({ type: "int" })
   id: number;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", unique: true })
   name: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", unique: true })
   path: string;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
