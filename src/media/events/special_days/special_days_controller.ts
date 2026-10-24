@@ -1,7 +1,7 @@
 import {
   getSpecialDates,
-  insertSpecialDates,
-  deleteSpecialDates,
+  insertItems,
+  deleteItemsByField,
 } from "../../../data/data_controller";
 import { SpecialDate } from "../../../data/entities/SpecialDate";
 import { getFileNames } from "../../media_controller";
@@ -30,7 +30,8 @@ export async function sync(): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertSpecialDates(
+    await insertItems(
+      SpecialDate,
       newFiles.map((file) =>
         Object.assign(new SpecialDate(), {
           name: file,
@@ -44,7 +45,7 @@ export async function sync(): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteSpecialDates(deletedFiles);
+    await deleteItemsByField(SpecialDate, deletedFiles, "name");
     console.log(`${deletedFiles.length} old special dates deleted`);
   }
 }

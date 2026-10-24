@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getBulborb, getBulborbs } from "../data/data_controller";
+import { getRandomItem, getItems } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -7,6 +7,7 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
+import { Bulborb as BulborbEntity } from "../data/entities/Bulborb.js";
 
 const Bulborb: DiscordCommand = {
   name: "bulborb",
@@ -27,15 +28,24 @@ const Bulborb: DiscordCommand = {
         .setDescription("List bulborbs instead of uploading")
         .setRequired(false),
     },
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      option: new SlashCommandBooleanOption()
+        .setName("recent")
+        .setDescription("Only get recently uploaded bulborbs")
+        .setRequired(false),
+    },
   ],
   execute: async (interaction) => {
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
+    const recent = interaction.options.getBoolean("recent") ?? false;
 
     if (list) {
       // List Bulborbs
-      const bulborbs = await getBulborbs({
+      const bulborbs = await getItems(BulborbEntity, {
         contains: query,
+        recent,
       });
 
       if (bulborbs.length == 0) {
@@ -51,8 +61,9 @@ const Bulborb: DiscordCommand = {
       await replyPagedEmbeds(interaction, pages);
     } else {
       // Random Bulborb
-      const bulborb = await getBulborb({
+      const bulborb = await getRandomItem(BulborbEntity, {
         contains: query,
+        recent,
       });
 
       if (!bulborb) {

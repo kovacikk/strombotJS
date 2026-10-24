@@ -1,5 +1,12 @@
 import DataSource from "../data_source";
-import { In, MoreThan, Raw } from "typeorm";
+import {
+  In,
+  MoreThan,
+  EntityTarget,
+  ObjectLiteral,
+  Repository,
+  Brackets,
+} from "typeorm";
 import { Cat } from "./entities/Cat";
 import { Meme } from "./entities/Meme";
 import { Bulborb } from "./entities/Bulborb";
@@ -9,314 +16,167 @@ import { Weevil } from "./entities/Weevil";
 import { DayMeme } from "./entities/DayMeme";
 import { DayCategory } from "../media/media_types";
 import { SpecialDate } from "./entities/SpecialDate";
+import { SelectQueryBuilder } from "typeorm/browser";
+
+type Where = { condition: string; parameters?: ObjectLiteral };
 
 type GetOptions = {
   contains?: string;
+  recent?: boolean;
+  andWheres?: Where[];
 };
 
-// Bulborb Stuff
-export async function getBulborb(
+async function applyFilters<T extends ObjectLiteral>(
+  query: SelectQueryBuilder<T>,
+  repository: Repository<T>,
+  alias: string,
   options?: GetOptions,
-): Promise<Bulborb | null> {
-  const { contains } = options ?? {};
+): Promise<SelectQueryBuilder<T> | null> {
+  const { contains, recent, andWheres } = options ?? {};
 
-  const bulborbRepository = DataSource.getRepository(Bulborb);
+  const wheres: Where[] = [];
 
-  let query = bulborbRepository.createQueryBuilder("bulborb");
+  if (recent) {
+    const latestItem = await repository
+      .createQueryBuilder(alias)
+      .select(`MAX(${alias}.createdAt)`, "maxDate")
+      .getRawOne();
+
+    const maxDateStr = latestItem?.maxDate;
+    if (!maxDateStr) return null;
+
+    const maxDate = new Date(maxDateStr);
+    const oneDayBefore = new Date(maxDate.getTime() - 24 * 60 * 60 * 1000);
+
+    wheres.push({
+      condition: `${alias}.createdAt >= :oneDayBefore`,
+      parameters: { oneDayBefore },
+    });
+    wheres.push({
+      condition: `${alias}.createdAt <= :maxDate`,
+      parameters: { maxDate: new Date(maxDate.getTime() + 1) },
+    });
+  }
 
   if (contains) {
-    query = query.where("bulborb.name LIKE :name", { name: `%${contains}%` });
+    wheres.push({
+      condition: `${alias}.name LIKE :name`,
+      parameters: { name: `%${contains}%` },
+    });
   }
-  query = query.orderBy("RAND()");
 
-  const bulborb = await query.getOne();
-  return bulborb;
+  if (andWheres) {
+    for (const where of andWheres) {
+      wheres.push(where);
+    }
+  }
+
+  let first = true;
+  for (const { condition, parameters } of wheres) {
+    if (first) {
+      query = query.where(condition, parameters);
+      first = false;
+    } else {
+      query = query.andWhere(condition, parameters);
+    }
+  }
+  return query;
 }
 
-export async function getBulborbs(options?: GetOptions): Promise<Bulborb[]> {
-  const { contains } = options ?? {};
+// Get Random Item
+export async function getRandomItem<T extends ObjectLiteral>(
+  entityTarget: EntityTarget<T>,
+  options?: GetOptions,
+): Promise<T | null> {
+  const repository = DataSource.getRepository(entityTarget);
+  const alias = repository.metadata.name.toLowerCase();
+  let query = repository.createQueryBuilder(alias);
 
-  const bulborbRepository = DataSource.getRepository(Bulborb);
+  const filteredQuery = await applyFilters(query, repository, alias, options);
+  if (!filteredQuery) return null;
 
-  let query = bulborbRepository.createQueryBuilder("bulborb");
+  query = filteredQuery.orderBy("RAND()");
 
-  if (contains) {
-    query = query.where("bulborb.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("bulborb.name");
-
-  const bulborbs = await query.getMany();
-  return bulborbs;
+  return await query.getOne();
 }
 
-export async function getBulborbsByName(names: string[]): Promise<Bulborb[]> {
-  const bulborbRepository = DataSource.getRepository(Bulborb);
+// Get Items
+export async function getItems<T extends ObjectLiteral>(
+  entityTarget: EntityTarget<T>,
+  options?: GetOptions,
+): Promise<T[]> {
+  const repository = DataSource.getRepository(entityTarget);
+  const alias = repository.metadata.name.toLowerCase();
+  let query = repository.createQueryBuilder(alias);
 
-  const bulborbs: Bulborb[] = await bulborbRepository.find({
+  const filteredQuery = await applyFilters(query, repository, alias, options);
+  if (!filteredQuery) return [];
+
+  query = filteredQuery.orderBy(`${alias}.name`);
+
+  return await query.getMany();
+}
+
+// Get Items by Field
+export async function getItemsByField<T extends ObjectLiteral>(
+  entityTarget: EntityTarget<T>,
+  values: any[],
+  column: keyof T,
+): Promise<T[]> {
+  const repository = DataSource.getRepository(entityTarget);
+
+  return await repository.find({
     where: {
-      name: In(names),
-    },
-  });
-
-  return bulborbs;
-}
-
-export async function insertBulborbs(bulborbs: Bulborb[]): Promise<void> {
-  const bulborbRepository = DataSource.getRepository(Bulborb);
-
-  await bulborbRepository.save(bulborbs);
-}
-
-export async function deleteBulborbs(bulborbs: string[]): Promise<void> {
-  const bulborbRepository = DataSource.getRepository(Bulborb);
-
-  await bulborbRepository.delete({
-    name: In(bulborbs),
+      [column]: In(values),
+    } as any,
   });
 }
 
-// Cat Stuff
-export async function getCat(options?: GetOptions): Promise<Cat | null> {
-  const { contains } = options ?? {};
+// Insert Items
+export async function insertItems<T extends ObjectLiteral>(
+  entityTarget: EntityTarget<T>,
+  items: T[],
+): Promise<void> {
+  const repository = DataSource.getRepository(entityTarget);
 
-  const catRepository = DataSource.getRepository(Cat);
-
-  let query = catRepository.createQueryBuilder("cat");
-
-  if (contains) {
-    query = query.where("cat.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("RAND()");
-
-  const cat = await query.getOne();
-  return cat;
+  await repository.save(items);
 }
 
-export async function getCats(options?: GetOptions): Promise<Cat[]> {
-  const { contains } = options ?? {};
+// Delete Items By Field
+export async function deleteItemsByField<T extends ObjectLiteral>(
+  entityTarget: EntityTarget<T>,
+  values: any[],
+  column: keyof T,
+): Promise<void> {
+  const repository = DataSource.getRepository(entityTarget);
 
-  const catRepository = DataSource.getRepository(Cat);
-
-  let query = catRepository.createQueryBuilder("cat");
-
-  if (contains) {
-    query = query.where("cat.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("cat.name");
-
-  const cats = await query.getMany();
-  return cats;
-}
-
-export async function getCatsByName(names: string[]): Promise<Cat[]> {
-  const catRepository = DataSource.getRepository(Cat);
-
-  const cats: Cat[] = await catRepository.find({
-    where: {
-      name: In(names),
-    },
-  });
-
-  return cats;
-}
-
-export async function insertCats(cats: Cat[]): Promise<void> {
-  const catRepository = DataSource.getRepository(Cat);
-
-  await catRepository.save(cats);
-}
-
-export async function deleteCats(cats: string[]): Promise<void> {
-  const catRepository = DataSource.getRepository(Cat);
-
-  await catRepository.delete({
-    name: In(cats),
-  });
-}
-
-// Meme Stuff
-export async function getMeme(options?: GetOptions): Promise<Meme | null> {
-  const { contains } = options ?? {};
-
-  const memeRepository = DataSource.getRepository(Meme);
-
-  let query = memeRepository.createQueryBuilder("meme");
-
-  if (contains) {
-    query = query.where("meme.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("RAND()");
-
-  const meme = await query.getOne();
-  return meme;
-}
-
-export async function getMemes(options?: GetOptions): Promise<Meme[]> {
-  const { contains } = options ?? {};
-
-  const memeRepository = DataSource.getRepository(Meme);
-
-  let query = memeRepository.createQueryBuilder("meme");
-
-  if (contains) {
-    query = query.where("meme.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("meme.name");
-
-  const memes = await query.getMany();
-  return memes;
-}
-
-export async function getMemesByName(names: string[]): Promise<Meme[]> {
-  const memeRepository = DataSource.getRepository(Meme);
-
-  const memes: Meme[] = await memeRepository.find({
-    where: {
-      name: In(names),
-    },
-  });
-
-  return memes;
-}
-
-export async function insertMemes(memes: Meme[]): Promise<void> {
-  const memeRepository = DataSource.getRepository(Meme);
-
-  await memeRepository.save(memes);
-}
-
-export async function deleteMemes(memes: string[]): Promise<void> {
-  const memeRepository = DataSource.getRepository(Meme);
-
-  await memeRepository.delete({
-    name: In(memes),
-  });
-}
-
-// Weevil Stuff
-export async function getWeevil(options?: GetOptions): Promise<Weevil | null> {
-  const { contains } = options ?? {};
-
-  const weevilRepository = DataSource.getRepository(Weevil);
-
-  let query = weevilRepository.createQueryBuilder("weevil");
-
-  if (contains) {
-    query = query.where("weevil.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("RAND()");
-
-  const weevil = await query.getOne();
-  return weevil;
-}
-
-export async function getWeevils(options?: GetOptions): Promise<Weevil[]> {
-  const { contains } = options ?? {};
-
-  const weevilRepository = DataSource.getRepository(Weevil);
-
-  let query = weevilRepository.createQueryBuilder("weevil");
-
-  if (contains) {
-    query = query.where("weevil.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.orderBy("weevil.name");
-
-  const weevils = await query.getMany();
-  return weevils;
-}
-
-export async function getWeevilsByName(names: string[]): Promise<Weevil[]> {
-  const weevilRepository = DataSource.getRepository(Weevil);
-
-  const weevils: Weevil[] = await weevilRepository.find({
-    where: {
-      name: In(names),
-    },
-  });
-
-  return weevils;
-}
-
-export async function insertWeevils(weevils: Weevil[]): Promise<void> {
-  const weevilRepository = DataSource.getRepository(Weevil);
-
-  await weevilRepository.save(weevils);
-}
-
-export async function deleteWeevils(weevils: string[]): Promise<void> {
-  const weevilRepository = DataSource.getRepository(Weevil);
-
-  await weevilRepository.delete({
-    name: In(weevils),
-  });
+  await repository.delete({
+    [column]: In(values),
+  } as any);
 }
 
 // Day Meme Stuff
-export async function getDayMeme(
+export async function getRandomDayMeme(
   type: DayCategory,
   options?: GetOptions,
 ): Promise<DayMeme | null> {
-  const { contains } = options ?? {};
+  options?.andWheres?.push({
+    condition: "dayMeme.type = :type",
+    parameters: { type },
+  });
 
-  const dayMemeRepository = DataSource.getRepository(DayMeme);
-
-  let query = dayMemeRepository.createQueryBuilder("dayMeme");
-
-  if (contains) {
-    query = query.where("dayMeme.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query.andWhere("dayMeme.type = :type", { type }).orderBy("RAND()");
-
-  const dayMeme = await query.getOne();
-  return dayMeme;
+  return await getRandomItem(DayMeme, options);
 }
 
 export async function getDayMemes(
   type: DayCategory,
   options?: GetOptions,
 ): Promise<DayMeme[]> {
-  const { contains } = options ?? {};
-
-  const dayMemeRepository = DataSource.getRepository(DayMeme);
-
-  let query = dayMemeRepository.createQueryBuilder("dayMeme");
-
-  if (contains) {
-    query = query.where("dayMeme.name LIKE :name", { name: `%${contains}%` });
-  }
-  query = query
-    .andWhere("dayMeme.type = :type", { type })
-    .orderBy("dayMeme.name");
-
-  const dayMemes = await query.getMany();
-  return dayMemes;
-}
-
-export async function getDayMemesByName(names: string[]): Promise<DayMeme[]> {
-  const dayMemeRepository = DataSource.getRepository(DayMeme);
-
-  const dayMemes: DayMeme[] = await dayMemeRepository.find({
-    where: {
-      name: In(names),
-    },
+  options?.andWheres?.push({
+    condition: "dayMeme.type = :type",
+    parameters: { type },
   });
-
-  return dayMemes;
-}
-
-export async function insertDayMemes(dayMemes: DayMeme[]): Promise<void> {
-  const dayMemeRepository = DataSource.getRepository(DayMeme);
-
-  await dayMemeRepository.save(dayMemes);
-}
-
-export async function deleteDayMemes(dayMemes: string[]): Promise<void> {
-  const dayMemeRepository = DataSource.getRepository(DayMeme);
-
-  await dayMemeRepository.delete({
-    name: In(dayMemes),
-  });
+  return await getItems(DayMeme, options);
 }
 
 // User stuff
@@ -466,22 +326,4 @@ export async function getSpecialDates(
 
   const specialDates = await query.getMany();
   return specialDates;
-}
-
-export async function insertSpecialDates(
-  specialDates: SpecialDate[],
-): Promise<void> {
-  const specialDateRepository = DataSource.getRepository(SpecialDate);
-
-  await specialDateRepository.save(specialDates);
-}
-
-export async function deleteSpecialDates(
-  specialDates: string[],
-): Promise<void> {
-  const specialDateRepository = DataSource.getRepository(SpecialDate);
-
-  await specialDateRepository.delete({
-    name: In(specialDates),
-  });
 }

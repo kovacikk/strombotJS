@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getCat, getCats } from "../data/data_controller";
+import { getRandomItem, getItems } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -7,6 +7,7 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
+import { Cat as CatEntity } from "../data/entities/Cat.js";
 
 const Cat: DiscordCommand = {
   name: "cat",
@@ -27,15 +28,24 @@ const Cat: DiscordCommand = {
         .setDescription("List cats instead of uploading")
         .setRequired(false),
     },
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      option: new SlashCommandBooleanOption()
+        .setName("recent")
+        .setDescription("Only get recently uploaded cats")
+        .setRequired(false),
+    },
   ],
   execute: async (interaction) => {
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
+    const recent = interaction.options.getBoolean("recent") ?? false;
 
     if (list) {
       // List Cats
-      const cats = await getCats({
+      const cats = await getItems(CatEntity, {
         contains: query,
+        recent,
       });
 
       if (cats.length == 0) {
@@ -51,8 +61,9 @@ const Cat: DiscordCommand = {
       await replyPagedEmbeds(interaction, pages);
     } else {
       // Random Cat
-      const cat = await getCat({
+      const cat = await getRandomItem(CatEntity, {
         contains: query,
+        recent,
       });
 
       if (!cat) {

@@ -1,12 +1,12 @@
 import {
   getDayMemes,
-  insertDayMemes,
-  deleteDayMemes,
+  deleteItemsByField,
+  insertItems,
 } from "../../data/data_controller";
 import { DayMeme } from "../../data/entities/DayMeme";
 import { getFileNames } from "../media_controller";
 import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
-import { getDayMemesByName } from "../../data/data_controller";
+import { getItemsByField } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -60,7 +60,8 @@ export async function sync(type: DayCategory): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertDayMemes(
+    await insertItems(
+      DayMeme,
       newFiles.map((file) =>
         Object.assign(new DayMeme(), {
           name: file,
@@ -73,7 +74,7 @@ export async function sync(type: DayCategory): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteDayMemes(deletedFiles);
+    await deleteItemsByField(DayMeme, deletedFiles, "name");
     console.log(`${deletedFiles.length} old dayMemes deleted`);
   }
 }
@@ -101,7 +102,7 @@ export async function checkDrive(
 
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
-  const existingDayMemes = await getDayMemesByName(fileNames);
+  const existingDayMemes = await getItemsByField(DayMeme, fileNames, "name");
   const existingSet = new Set();
   for (const existing of existingDayMemes) {
     existingSet.add(existing.name);

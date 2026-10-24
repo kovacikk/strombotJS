@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getDayMeme, getDayMemes } from "../data/data_controller";
+import { getRandomDayMeme, getDayMemes } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -28,10 +28,18 @@ const DayMeme: DiscordCommand = {
         .setDescription("List day memes instead of uploading")
         .setRequired(false),
     },
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      option: new SlashCommandBooleanOption()
+        .setName("recent")
+        .setDescription("Only get recently uploaded day memes")
+        .setRequired(false),
+    },
   ],
   execute: async (interaction) => {
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
+    const recent = interaction.options.getBoolean("recent") ?? false;
 
     // Get current day of the week
     const today = new Date();
@@ -46,6 +54,7 @@ const DayMeme: DiscordCommand = {
       // List Memes
       const dayMemes = await getDayMemes(day, {
         contains: query,
+        recent,
       });
 
       if (dayMemes.length == 0) {
@@ -61,8 +70,9 @@ const DayMeme: DiscordCommand = {
       await replyPagedEmbeds(interaction, pages);
     } else {
       // Random Day Meme
-      const dayMeme = await getDayMeme(day, {
+      const dayMeme = await getRandomDayMeme(day, {
         contains: query,
+        recent,
       });
 
       if (!dayMeme) {

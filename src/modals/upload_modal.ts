@@ -3,11 +3,11 @@ import { isCategoryType, isDayCategoryType } from "../media/media_types";
 import { Category, DayCategory } from "../media/media_types";
 import { dayMediaPaths } from "../media/dayMemes/day_meme_controller";
 import { categoryPathMap } from "../media/media_helpers";
-import { categoryFunctionMap } from "../data/data_helpers";
 import * as fs from "fs";
 import { Readable } from "stream";
 import { streamToFile } from "../drive/drive_controller.js";
 import { sync } from "../media/media_controller";
+import { getItemsByField } from "../data/data_controller";
 
 const UploadModal: DiscordModal = {
   name: "upload_modal",
@@ -66,7 +66,11 @@ const UploadModal: DiscordModal = {
     let failedFiles: string[] = [];
     for (const file of files) {
       const fullPath = path + file.name;
-      const existingNames = await categoryFunctionMap[category]([file.name]);
+      const existingNames = await getItemsByField(
+        category,
+        [file.name],
+        "name",
+      );
 
       if (existingNames.length > 0) {
         duplicateFiles.push(file.name);

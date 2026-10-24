@@ -1,12 +1,12 @@
 import {
-  getBulborbs,
-  insertBulborbs,
-  deleteBulborbs,
+  getItems,
+  deleteItemsByField,
+  getItemsByField,
+  insertItems,
 } from "../../data/data_controller";
 import { Bulborb } from "../../data/entities/Bulborb";
 import { getFileNames } from "../media_controller";
 import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
-import { getBulborbsByName } from "../../data/data_controller";
 import { DriveResults } from "../../media/media_controller";
 import {
   DriveEmbedManager,
@@ -21,13 +21,13 @@ const BULBORB_DRIVE_FOLDER_ID = "1AVyX2L8Tp0LFumKGB_aYyxk2sR9cXJS9";
 
 // Compares files and database to insert new bulborbs and delete old ones
 export async function sync(): Promise<void> {
-  const databaseBulborbs = await getBulborbs();
+  const databaseBulborbs = await getItems(Bulborb);
 
   const bulborbMap: Record<string, Bulborb> = {};
   for (const bulborb of databaseBulborbs) {
     bulborbMap[bulborb.name] = bulborb;
   }
-  const databaseBulborbNames = (await getBulborbs()).map(
+  const databaseBulborbNames = (await getItems(Bulborb)).map(
     (bulborb) => bulborb.name,
   );
 
@@ -41,7 +41,8 @@ export async function sync(): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertBulborbs(
+    await insertItems(
+      Bulborb,
       newFiles.map((file) =>
         Object.assign(new Bulborb(), {
           name: file,
@@ -53,7 +54,7 @@ export async function sync(): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteBulborbs(deletedFiles);
+    await deleteItemsByField(Bulborb, deletedFiles, "name");
     console.log(`${deletedFiles.length} old bulborbs deleted`);
   }
 }
@@ -77,7 +78,7 @@ export async function checkDrive(
 
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
-  const existingBulborbs = await getBulborbsByName(fileNames);
+  const existingBulborbs = await getItemsByField(Bulborb, fileNames, "name");
   const existingSet = new Set();
   for (const existing of existingBulborbs) {
     existingSet.add(existing.name);

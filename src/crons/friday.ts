@@ -1,7 +1,8 @@
 import type { DiscordCron } from "../types.js";
-import { TextChannel, AttachmentBuilder } from "discord.js";
-import { getMeme } from "../data/data_controller.js";
+import { AttachmentBuilder } from "discord.js";
+import { getRandomItem } from "../data/data_controller.js";
 import { getGeneralChannel } from "../helpers";
+import { Meme } from "../data/entities/Meme.js";
 
 const Friday: DiscordCron = {
   name: "friday",
@@ -10,7 +11,7 @@ const Friday: DiscordCron = {
     const channel = await getGeneralChannel(client);
 
     if (channel) {
-      const meme = await getMeme();
+      const meme = await getRandomItem(Meme);
 
       if (!meme) {
         console.error(`Failed to load meme`);

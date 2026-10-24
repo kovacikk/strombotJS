@@ -1,8 +1,12 @@
-import { getMemes, insertMemes, deleteMemes } from "../../data/data_controller";
+import {
+  getItems,
+  insertItems,
+  deleteItemsByField,
+} from "../../data/data_controller";
 import { Meme } from "../../data/entities/Meme";
 import { getFileNames } from "../media_controller";
 import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
-import { getMemesByName } from "../../data/data_controller";
+import { getItemsByField } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -16,13 +20,13 @@ const MEME_DRIVE_FOLDER_ID = "1wd_KRGLDe7N3taKclTwUERDZrpOCSWOo";
 
 // Compares files and database to insert new memes and delete old ones
 export async function sync(): Promise<void> {
-  const databaseMemes = await getMemes();
+  const databaseMemes = await getItems(Meme);
 
   const memeMap: Record<string, Meme> = {};
   for (const meme of databaseMemes) {
     memeMap[meme.name] = meme;
   }
-  const databaseMemeNames = (await getMemes()).map((meme) => meme.name);
+  const databaseMemeNames = (await getItems(Meme)).map((meme) => meme.name);
 
   const fileMemes = getFileNames(MEME_PATH);
 
@@ -34,7 +38,8 @@ export async function sync(): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertMemes(
+    await insertItems(
+      Meme,
       newFiles.map((file) =>
         Object.assign(new Meme(), {
           name: file,
@@ -46,7 +51,7 @@ export async function sync(): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteMemes(deletedFiles);
+    await deleteItemsByField(Meme, deletedFiles, "name");
     console.log(`${deletedFiles.length} old memes deleted`);
   }
 }
@@ -70,7 +75,7 @@ export async function checkDrive(
 
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
-  const existingMemes = await getMemesByName(fileNames);
+  const existingMemes = await getItemsByField(Meme, fileNames, "name");
   const existingSet = new Set();
   for (const existing of existingMemes) {
     existingSet.add(existing.name);

@@ -1,6 +1,7 @@
 import type { DiscordCron } from "../types.js";
-import { TextChannel, AttachmentBuilder } from "discord.js";
-import { getWeevil } from "../data/data_controller";
+import { AttachmentBuilder } from "discord.js";
+import { getRandomItem } from "../data/data_controller";
+import { Weevil } from "../data/entities/Weevil.js";
 import { getGeneralChannel } from "../helpers";
 
 const WeevilWednesday: DiscordCron = {
@@ -10,7 +11,7 @@ const WeevilWednesday: DiscordCron = {
     const channel = await getGeneralChannel(client);
 
     if (channel) {
-      const weevil = await getWeevil();
+      const weevil = await getRandomItem(Weevil);
 
       if (!weevil) {
         console.error(`Failed to load weevil`);

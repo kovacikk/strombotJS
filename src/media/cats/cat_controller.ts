@@ -1,8 +1,12 @@
-import { getCats, insertCats, deleteCats } from "../../data/data_controller";
+import {
+  getItems,
+  insertItems,
+  deleteItemsByField,
+} from "../../data/data_controller";
 import { Cat } from "../../data/entities/Cat";
 import { getFileNames } from "../media_controller";
 import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
-import { getCatsByName } from "../../data/data_controller";
+import { getItemsByField } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -16,13 +20,13 @@ const CAT_DRIVE_FOLDER_ID = "1RyGoPvqWRH9m4xQN02GVvBkez6CHmk7t";
 
 // Compares files and database to insert new cats and delete old ones
 export async function sync(): Promise<void> {
-  const databaseCats = await getCats();
+  const databaseCats = await getItems(Cat);
 
   const catMap: Record<string, Cat> = {};
   for (const cat of databaseCats) {
     catMap[cat.name] = cat;
   }
-  const databaseCatNames = (await getCats()).map((cat) => cat.name);
+  const databaseCatNames = (await getItems(Cat)).map((cat) => cat.name);
 
   const fileCats = getFileNames(CAT_PATH);
 
@@ -32,7 +36,8 @@ export async function sync(): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertCats(
+    await insertItems(
+      Cat,
       newFiles.map((file) =>
         Object.assign(new Cat(), {
           name: file,
@@ -44,7 +49,7 @@ export async function sync(): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteCats(deletedFiles);
+    await deleteItemsByField(Cat, deletedFiles, "name");
     console.log(`${deletedFiles.length} old cats deleted`);
   }
 }
@@ -68,7 +73,7 @@ export async function checkDrive(
 
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
-  const existingCats = await getCatsByName(fileNames);
+  const existingCats = await getItemsByField(Cat, fileNames, "name");
   const existingSet = new Set();
   for (const existing of existingCats) {
     existingSet.add(existing.name);

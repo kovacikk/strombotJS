@@ -1,12 +1,12 @@
 import {
-  getWeevils,
-  insertWeevils,
-  deleteWeevils,
+  getItems,
+  insertItems,
+  deleteItemsByField,
 } from "../../data/data_controller";
 import { Weevil } from "../../data/entities/Weevil";
 import { getFileNames } from "../media_controller";
 import { listFiles, downloadAndEvictFiles } from "../../drive/drive_controller";
-import { getWeevilsByName } from "../../data/data_controller";
+import { getItemsByField } from "../../data/data_controller";
 import { DriveResults } from "../media_controller";
 import {
   DriveEmbedManager,
@@ -20,13 +20,15 @@ const WEEVIL_DRIVE_FOLDER_ID = "18cz_oR9qUhZhJo1EqeMlDLSfa66MRDGa";
 
 // Compares files and database to insert new weevils and delete old ones
 export async function sync(): Promise<void> {
-  const databaseWeevils = await getWeevils();
+  const databaseWeevils = await getItems(Weevil);
 
   const weevilMap: Record<string, Weevil> = {};
   for (const weevil of databaseWeevils) {
     weevilMap[weevil.name] = weevil;
   }
-  const databaseWeevilNames = (await getWeevils()).map((weevil) => weevil.name);
+  const databaseWeevilNames = (await getItems(Weevil)).map(
+    (weevil) => weevil.name,
+  );
 
   const fileWeevils = getFileNames(WEEVIL_PATH);
 
@@ -38,7 +40,8 @@ export async function sync(): Promise<void> {
   );
 
   if (newFiles.length > 0) {
-    await insertWeevils(
+    await insertItems(
+      Weevil,
       newFiles.map((file) =>
         Object.assign(new Weevil(), {
           name: file,
@@ -50,7 +53,7 @@ export async function sync(): Promise<void> {
   }
 
   if (deletedFiles.length > 0) {
-    await deleteWeevils(deletedFiles);
+    await deleteItemsByField(Weevil, deletedFiles, "name");
     console.log(`${deletedFiles.length} old weevils deleted`);
   }
 }
@@ -74,7 +77,7 @@ export async function checkDrive(
 
   // Find any google drive files with the same name in the database
   const fileNames: string[] = files.map((file) => file.name);
-  const existingWeevils = await getWeevilsByName(fileNames);
+  const existingWeevils = await getItemsByField(Weevil, fileNames, "name");
   const existingSet = new Set();
   for (const existing of existingWeevils) {
     existingSet.add(existing.name);

@@ -1,5 +1,5 @@
 import type { DiscordCommand } from "../types.js";
-import { getMeme, getMemes } from "../data/data_controller";
+import { getItems, getRandomItem } from "../data/data_controller";
 import {
   ApplicationCommandOptionType,
   AttachmentBuilder,
@@ -7,6 +7,7 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
+import { Meme as MemeEntity } from "../data/entities/Meme.js";
 
 const Meme: DiscordCommand = {
   name: "meme",
@@ -27,15 +28,24 @@ const Meme: DiscordCommand = {
         .setDescription("List memes instead of uploading")
         .setRequired(false),
     },
+    {
+      type: ApplicationCommandOptionType.Boolean,
+      option: new SlashCommandBooleanOption()
+        .setName("recent")
+        .setDescription("Only get recently uploaded memes")
+        .setRequired(false),
+    },
   ],
   execute: async (interaction) => {
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
+    const recent = interaction.options.getBoolean("recent") ?? false;
 
     if (list) {
       // List Memes
-      const memes = await getMemes({
+      const memes = await getItems(MemeEntity, {
         contains: query,
+        recent,
       });
 
       if (memes.length == 0) {
@@ -51,8 +61,9 @@ const Meme: DiscordCommand = {
       await replyPagedEmbeds(interaction, pages);
     } else {
       // Random Meme
-      const meme = await getMeme({
+      const meme = await getRandomItem(MemeEntity, {
         contains: query,
+        recent,
       });
 
       if (!meme) {
