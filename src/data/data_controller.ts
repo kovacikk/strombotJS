@@ -158,25 +158,37 @@ export async function deleteItemsByField<T extends ObjectLiteral>(
 // Day Meme Stuff
 export async function getRandomDayMeme(
   type: DayCategory,
-  options?: GetOptions,
+  options: GetOptions = {},
 ): Promise<DayMeme | null> {
-  options?.andWheres?.push({
-    condition: "dayMeme.type = :type",
-    parameters: { type },
-  });
+  const newOptions: GetOptions = {
+    ...options,
+    andWheres: [
+      ...(options.andWheres || []),
+      {
+        condition: "daymeme.type = :type",
+        parameters: { type },
+      },
+    ],
+  };
 
-  return await getRandomItem(DayMeme, options);
+  return await getRandomItem(DayMeme, newOptions);
 }
 
 export async function getDayMemes(
   type: DayCategory,
-  options?: GetOptions,
+  options: GetOptions = {},
 ): Promise<DayMeme[]> {
-  options?.andWheres?.push({
-    condition: "dayMeme.type = :type",
-    parameters: { type },
-  });
-  return await getItems(DayMeme, options);
+  const newOptions: GetOptions = {
+    ...options,
+    andWheres: [
+      ...(options.andWheres || []),
+      {
+        condition: "daymeme.type = :type",
+        parameters: { type },
+      },
+    ],
+  };
+  return await getItems(DayMeme, newOptions);
 }
 
 // User stuff

@@ -63,7 +63,7 @@ const DayMeme: DiscordCommand = {
       }
 
       const pages = getEmbedPages(
-        "Day Memes",
+        `Day Memes - ${day}`,
         dayMemes.flatMap((dayMeme) => dayMeme.name),
       );
 
