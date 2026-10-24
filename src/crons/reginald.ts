@@ -1,8 +1,6 @@
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder } from "discord.js";
-
-//const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
-const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";
+import { getGeneralChannel } from "../helpers";
 
 const ANCHOR_DATE = new Date("2020-01-07T00:00:00");
 const MS_IN_A_WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -23,12 +21,8 @@ const Reginald: DiscordCron = {
       return;
     }
 
-    let channel = (await client.channels.cache.get(
-      TEST_CHANNEL_ID,
-    )) as TextChannel;
-    if (!channel) {
-      channel = (await client.channels.fetch(TEST_CHANNEL_ID)) as TextChannel;
-    }
+    const channel = await getGeneralChannel(client);
+
     if (channel) {
       const file = new AttachmentBuilder(REGINALD_PATH, {
         name: "reginald.jpg",

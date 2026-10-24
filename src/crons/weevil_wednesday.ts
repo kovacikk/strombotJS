@@ -1,20 +1,14 @@
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder } from "discord.js";
 import { getWeevil } from "../data/data_controller";
-
-//const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
-const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";
+import { getGeneralChannel } from "../helpers";
 
 const WeevilWednesday: DiscordCron = {
   name: "weevil_wednesday",
   pattern: "0 4 * * 3",
   execute: async (client) => {
-    let channel = (await client.channels.cache.get(
-      TEST_CHANNEL_ID,
-    )) as TextChannel;
-    if (!channel) {
-      channel = (await client.channels.fetch(TEST_CHANNEL_ID)) as TextChannel;
-    }
+    const channel = await getGeneralChannel(client);
+
     if (channel) {
       const weevil = await getWeevil();
 

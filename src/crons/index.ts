@@ -4,6 +4,7 @@ import Reginald from "./reginald.js";
 import ReginaldBread from "./reginald_bread.js";
 import Birthday from "./birthday.js";
 import SpecialDates from "./special_dates.js";
+import Friday from "./friday.js";
 
 const allCrons: DiscordCron[] = [
   Birthday,
@@ -11,6 +12,7 @@ const allCrons: DiscordCron[] = [
   Reginald,
   ReginaldBread,
   SpecialDates,
+  Friday,
 ];
 
 export default allCrons;

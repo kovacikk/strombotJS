@@ -5,10 +5,12 @@ import {
   SlashCommandStringOption,
 } from "discord.js";
 import type {
+  Client,
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   SlashCommandAttachmentOption,
   SlashCommandBooleanOption,
   SlashCommandUserOption,
+  TextChannel,
 } from "discord.js";
 
 import allCommands from "./commands/index.js";
@@ -85,4 +87,21 @@ export function getModalMap(): Map<string, DiscordModal> {
   }
 
   return map;
+}
+
+const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
+const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";
+const TEST = Boolean(process.env.TEST) ?? false;
+
+export async function getGeneralChannel(client: Client): Promise<TextChannel> {
+  const generalChannelId = TEST ? TEST_CHANNEL_ID : BIGONE_CHANNEL_ID;
+
+  let channel = (await client.channels.cache.get(
+    generalChannelId,
+  )) as TextChannel;
+  if (!channel) {
+    channel = (await client.channels.fetch(generalChannelId)) as TextChannel;
+  }
+
+  return channel;
 }

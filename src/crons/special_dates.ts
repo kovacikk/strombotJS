@@ -1,20 +1,20 @@
 import { getSpecialDatesByDate } from "../data/data_controller";
 import type { DiscordCron } from "../types.js";
-import { TextChannel, AttachmentBuilder, EmbedBuilder } from "discord.js";
-
-//const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
-const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";
+import {
+  TextChannel,
+  AttachmentBuilder,
+  EmbedBuilder,
+  MessagePayload,
+  MessageCreateOptions,
+} from "discord.js";
+import { getGeneralChannel } from "../helpers";
 
 const SpecialDates: DiscordCron = {
   name: "special_dates",
   pattern: "0 12 * * *",
   execute: async (client) => {
-    let channel = (await client.channels.cache.get(
-      TEST_CHANNEL_ID,
-    )) as TextChannel;
-    if (!channel) {
-      channel = (await client.channels.fetch(TEST_CHANNEL_ID)) as TextChannel;
-    }
+    const channel = await getGeneralChannel(client);
+
     if (channel) {
       const date = new Date();
 
@@ -27,9 +27,15 @@ const SpecialDates: DiscordCron = {
           name: date.name,
         });
 
-        await channel.send({
+        const message: MessageCreateOptions = {
           files: [file],
-        });
+        };
+
+        if (date.message) {
+          message.content = date.message;
+        }
+
+        await channel.send(message);
       }
     }
   },

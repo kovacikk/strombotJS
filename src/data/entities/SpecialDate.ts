@@ -22,6 +22,9 @@ export class SpecialDate {
   @Column({ type: "int" })
   day: number;
 
+  @Column({ type: "varchar", nullable: true })
+  message?: string | null;
+
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;
 }
