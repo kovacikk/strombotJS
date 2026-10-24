@@ -3,7 +3,7 @@ import {
   ApplicationCommandOptionBase,
   ApplicationCommandOptionType,
 } from "discord.js";
-import type { CacheType, Client } from "discord.js";
+import type { CacheType, Client, ModalSubmitInteraction } from "discord.js";
 
 export type DiscordCommand = {
   name: string;
@@ -26,4 +26,10 @@ export type DiscordCron = {
   name: string;
   pattern: string;
   execute: (client: Client) => void;
+};
+
+export type DiscordModal = {
+  name: string;
+  description: string;
+  execute: (interaction: ModalSubmitInteraction<CacheType>) => void;
 };

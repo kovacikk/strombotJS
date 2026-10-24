@@ -1,4 +1,4 @@
-import type { DiscordCommand } from "./types.js";
+import type { DiscordCommand, DiscordModal } from "./types.js";
 import {
   ApplicationCommandOptionType,
   SlashCommandBuilder,
@@ -12,6 +12,7 @@ import type {
 } from "discord.js";
 
 import allCommands from "./commands/index.js";
+import allModals from "./modals/index.js";
 
 export function getCommands(): DiscordCommand[] {
   return allCommands;
@@ -68,4 +69,20 @@ export function buildCommands(
     }
   }
   return slashCommands;
+}
+
+export function getModals(): DiscordModal[] {
+  return allModals;
+}
+
+export function getModalMap(): Map<string, DiscordModal> {
+  const modals = getModals();
+
+  const map = new Map<string, DiscordModal>();
+
+  for (const modal of modals) {
+    map.set(modal.name, modal);
+  }
+
+  return map;
 }
