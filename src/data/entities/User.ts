@@ -32,6 +32,12 @@ export class User {
   @Column({ type: "int", default: 0 })
   cancels: number;
 
+  @Column({ type: "int", default: 0 })
+  devotion: number;
+
+  @Column({ name: "last_prayer", type: "timestamp", nullable: true })
+  lastPrayer: Date;
+
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
   createdAt: Date;
 }

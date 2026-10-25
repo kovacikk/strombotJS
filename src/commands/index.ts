@@ -7,6 +7,7 @@ import DayMeme from "./dayMeme.js";
 import Goodnight from "./goodnight.js";
 import Stat from "./stat/stat.js";
 import Upload from "./upload.js";
+import Pray from "./pray.js";
 
 const allCommands = [
   Bulborb,
@@ -18,6 +19,7 @@ const allCommands = [
   Goodnight,
   Stat,
   Upload,
+  Pray,
 ];
 
 export default allCommands;

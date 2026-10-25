@@ -265,6 +265,48 @@ export async function getCancels(): Promise<User[]> {
   return users;
 }
 
+export async function getDevotion(): Promise<User[]> {
+  const userRepository = DataSource.getRepository(User);
+
+  const users = userRepository.find({
+    where: {
+      devotion: MoreThan(0),
+    },
+    order: {
+      cancels: "DESC",
+    },
+  });
+
+  return users;
+}
+
+export async function incrementDevotion(
+  user: User,
+  amount: number,
+  setLastPrayer: boolean = true,
+): Promise<void> {
+  const userRepository = DataSource.getRepository(User);
+
+  const updatePayload: any = {
+    devotion: () => "devotion + :amount",
+  };
+
+  if (setLastPrayer) {
+    updatePayload.lastPrayer = new Date();
+  }
+
+  await userRepository
+    .createQueryBuilder()
+    .update(User)
+    .set(updatePayload)
+    .where("id = :id")
+    .setParameters({
+      id: user.id,
+      amount: amount,
+    })
+    .execute();
+}
+
 export async function getBirthdays(birthday: Date): Promise<User[]> {
   const userRepository = DataSource.getRepository(User);
 

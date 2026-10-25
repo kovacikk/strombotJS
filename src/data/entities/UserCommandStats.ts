@@ -35,4 +35,7 @@ export class UserCommandStats {
 
   @Column({ type: "int", default: 0 })
   upload: number;
+
+  @Column({ type: "int", default: 0 })
+  pray: number;
 }
