@@ -9,7 +9,11 @@ export async function buildStats(
     ([key]) => !["user", "userId"].includes(key),
   );
 
-  const generalStats = "**General Stats:**\n" + `cancelled: ${dbUser.cancels}`;
+  const generalStats = [
+    `**General Stats:**`,
+    `cancelled: ${dbUser.cancels}`,
+    `devotion: ${dbUser.devotion}`,
+  ];
 
   const commandUsage =
     "**Command Usage:**\n" +
@@ -21,7 +25,7 @@ export async function buildStats(
       })
       .join("\n");
 
-  const descriptions = [generalStats, commandUsage];
+  const descriptions = [generalStats.join("\n"), commandUsage];
 
   const embed = new EmbedBuilder()
     .setTitle(`${user.displayName} Stats`)

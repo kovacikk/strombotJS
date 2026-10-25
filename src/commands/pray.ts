@@ -14,7 +14,18 @@ import {
   CacheType,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
-import { Collection } from "discord.js";
+import { Collection, InteractionReplyOptions } from "discord.js";
+
+const WINKY_BLINK_PATH = "/app/media/events/pray/winky_blink.gif";
+const WINKY_MAD_PATH = "/app/media/events/pray/winky_mad.png";
+
+const WINKY_FRIB_PATH = "/app/media/events/pray/winky_frib.gif";
+const WINKY_HOP_PATH = "/app/media/events/pray/winky_hop.gif";
+const WINKY_BIG_HOP_PATH = "/app/media/events/pray/winky_hop_slow.gif";
+const WINKY_SWIM_PATH = "/app/media/events/pray/winky_swim.gif";
+const WINKY_LICK_PATH = "/app/media/events/pray/winky_lick.gif";
+
+const WINKY_PRIDE_PATH = "/app/media/events/pray/winky_pride.gif";
 
 const Pray: DiscordCommand = {
   name: "pray",
@@ -41,9 +52,15 @@ const Pray: DiscordCommand = {
       const roll = rollPrayer(user.lastPrayer);
       await incrementDevotion(user, roll.amount, roll.setLastPrayer);
 
-      await interaction.reply(
-        `${roll.reason} (${roll.amount >= 0 ? "+" + roll.amount : roll.amount})`,
-      );
+      const message: InteractionReplyOptions = {
+        content: `${roll.reason} **(${roll.amount >= 0 ? "+" + roll.amount : roll.amount})**`,
+      };
+
+      if (roll.file) {
+        message.files = [roll.file];
+      }
+
+      await interaction.reply(message);
     }
   },
 };
@@ -76,17 +93,18 @@ const GOOD_OUTCOMES: OutcomeTier[] = [
   { type: PrayerRoll.Perfect, weight: 1 },
 ];
 
-type prayerRoll = {
+type PrayerOutcome = {
   amount: number;
   reason: string;
+  file?: string;
   setLastPrayer: boolean;
 };
-function rollPrayer(lastPrayer: Date): prayerRoll {
+function rollPrayer(lastPrayer: Date): PrayerOutcome {
   const current = new Date();
-  const twoDaysInMs = 2 * 24 * 60 * 60 * 1000;
+  const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
 
   // Check if time has not expired
-  if (lastPrayer && current.getTime() - lastPrayer.getTime() < twoDaysInMs) {
+  if (lastPrayer && current.getTime() - lastPrayer.getTime() < oneDayInMs) {
     const earlyOptions = [
       `Winky feels like you're coming on a little strong. Maybe wait a little before your next prayer.`,
       `Winky is tired of your persistence. Maybe take a break from praying for now.`,
@@ -95,7 +113,7 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
     ];
 
     return {
-      amount: -1,
+      amount: 0,
       reason: chooseRandom(earlyOptions),
       setLastPrayer: false,
     };
@@ -113,21 +131,25 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
           `Winky accepts your prayer. You think you hear a distant frib.`,
           `You clasp your hands together in prayer.`,
           `You pray to Winky and all the frogs out there.`,
+          `"Oh great frog, please bless me with a hop", you say. Winky thinks about it.`,
         ];
         return {
           amount: 1,
           reason: chooseRandom(normalOptions),
           setLastPrayer: true,
+          file: WINKY_FRIB_PATH,
         };
       case PrayerRoll.Good:
         const goodOptions = [
           `You recite the sacred texts. "When Him Hop, Me Hap". You feel Hap.`,
           `You try and let out a big frib. Winky frobs in response.`,
+          `You offer up a worm to the altar. Winky approves.`,
         ];
         return {
           amount: 2,
           reason: chooseRandom(goodOptions),
           setLastPrayer: true,
+          file: WINKY_HOP_PATH,
         };
       case PrayerRoll.Great:
         const greatOptions = [
@@ -139,26 +161,31 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
           amount: 3,
           reason: chooseRandom(greatOptions),
           setLastPrayer: true,
+          file: WINKY_BIG_HOP_PATH,
         };
       case PrayerRoll.Super:
         const superOptions = [
           `You feel like a frog yourself today. Your frib resonates with Winky.`,
           `While praying you hop as high as you can. Winky is impressed!`,
+          `You did some laps in the pool before praying. You feel your inner frog.`,
         ];
         return {
           amount: 4,
           reason: chooseRandom(superOptions),
           setLastPrayer: true,
+          file: WINKY_SWIM_PATH,
         };
       case PrayerRoll.Amazing:
         const amazingOptions = [
           `You feel Winky in your heart, and he feels you in his. "When Him Pray, Me Hop". And oh does he hop!`,
           `You imagine yourself as a frog. Winky is there with you! Frib, frob, frobbage!`,
+          `You scream Winky's name in the middle of the street at 3am. You love FROGS!!!!!`,
         ];
         return {
           amount: 5,
           reason: chooseRandom(amazingOptions),
           setLastPrayer: true,
+          file: WINKY_LICK_PATH,
         };
       case PrayerRoll.Perfect:
         const perfectOptions = [
@@ -168,6 +195,7 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
           amount: 10,
           reason: chooseRandom(perfectOptions),
           setLastPrayer: true,
+          file: WINKY_PRIDE_PATH,
         };
     }
   } else {
@@ -181,11 +209,13 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
         `You pray but all you get is silence.`,
         `You're not feeling it today for some reason.`,
         `You decide to take a day off from praying today.`,
+        `Winky is too busy fribbing and frobbing to care.`,
       ];
       return {
         amount: 0,
         reason: chooseRandom(neutralOptions),
         setLastPrayer: true,
+        file: WINKY_BLINK_PATH,
       };
     } else {
       // 33% Bad Outcome
@@ -195,11 +225,14 @@ function rollPrayer(lastPrayer: Date): prayerRoll {
         `You stumble over your sacred chant. That's embarrassing.`,
         `You try to frob, but frub instead. What kind of believer are you!?`,
         `You came to prayer wearing THAT???`,
+        `You foolishly try to lick Winky. Know your place worm.`,
+        `You get hungry and eat the fly you were going to offer. Hey, that was for Winky!`,
       ];
       return {
         amount: -1,
         reason: chooseRandom(badOptions),
         setLastPrayer: true,
+        file: WINKY_MAD_PATH,
       };
     }
   }
