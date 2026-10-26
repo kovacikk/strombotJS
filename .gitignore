@@ -1,6 +1,7 @@
 node_modules/
 /media/
 /dist/
+/csv/
 *.tsbuildinfo
 .eslintcache
 .prettiercache

@@ -223,7 +223,7 @@ export async function getUser(userId: string): Promise<User | null> {
   return user;
 }
 
-async function createUser(user: User): Promise<User> {
+export async function createUser(user: User): Promise<User> {
   const userRepository = DataSource.getRepository(User);
 
   const newUser = userRepository.create(user);

@@ -8,6 +8,7 @@
     "deploy": "npx tsx -r dotenv/config scripts/deploy_commands.ts",
     "drive": "npx tsx -r dotenv/config scripts/create_drive_folder.ts",
     "typeorm": "typeorm-ts-node-commonjs",
+    "migrate:data": "npx tsx -r dotenv/config scripts/migrate_data.ts",
     "migration:create": "npm run typeorm -- migration:create -d scripts/migration_source.ts",
     "migration:generate": "npm run typeorm -- migration:generate -d scripts/migration_source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d scripts/migration_source.ts",
@@ -21,11 +22,13 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.5",
+    "csv-parser": "^3.2.1",
     "eslint": "^10.12.0",
     "eslint-import-resolver-typescript": "^4.4.5",
     "globals": "^17.13.0",
     "prettier": "^3.9.10",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.0"
   },
