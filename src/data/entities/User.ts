@@ -23,10 +23,10 @@ export class User {
   @Column({ name: "last_name", type: "varchar", nullable: true })
   lastName?: string;
 
-  @Column({ type: "int" })
+  @Column({ type: "int", nullable: true })
   birthMonth?: number | null;
 
-  @Column({ type: "int" })
+  @Column({ type: "int", nullable: true })
   birthDay?: number | null;
 
   @Column({ type: "int", default: 0 })
