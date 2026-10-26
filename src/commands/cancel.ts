@@ -14,7 +14,7 @@ import {
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { Collection } from "discord.js";
 
-const DREW_USER_ID = "170301539020308481"; // TODO Update to Drew
+const DREW_USER_ID = "159433180036726784";
 
 const Cancel: DiscordCommand = {
   name: "cancel",
