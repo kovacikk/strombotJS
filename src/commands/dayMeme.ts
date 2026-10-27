@@ -82,6 +82,7 @@ const DayMeme: DiscordCommand = {
         return;
       }
 
+      console.log(`Uploading day meme ${dayMeme.name}`);
       const file = new AttachmentBuilder(dayMeme?.path ?? "", {
         name: dayMeme?.name ?? "",
       });

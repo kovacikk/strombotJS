@@ -73,6 +73,7 @@ const Meme: DiscordCommand = {
         return;
       }
 
+      console.log(`Uploading meme ${meme.name}`);
       const file = new AttachmentBuilder(meme?.path ?? "", {
         name: meme?.name ?? "",
       });

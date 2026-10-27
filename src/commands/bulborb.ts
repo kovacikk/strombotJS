@@ -73,6 +73,7 @@ const Bulborb: DiscordCommand = {
         return;
       }
 
+      console.log(`Uploading bulborb ${bulborb.name}`);
       const file = new AttachmentBuilder(bulborb?.path ?? "", {
         name: bulborb?.name ?? "",
       });

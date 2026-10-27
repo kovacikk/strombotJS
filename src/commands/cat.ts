@@ -73,6 +73,7 @@ const Cat: DiscordCommand = {
         return;
       }
 
+      console.log(`Uploading cat ${cat.name}`);
       const file = new AttachmentBuilder(cat?.path ?? "", {
         name: cat?.name ?? "",
       });

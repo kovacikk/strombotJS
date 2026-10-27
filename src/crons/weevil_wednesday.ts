@@ -18,6 +18,7 @@ const WeevilWednesday: DiscordCron = {
         return;
       }
 
+      console.log(`Uploading weevil ${weevil.name}`);
       const file = new AttachmentBuilder(weevil?.path ?? "", {
         name: weevil?.name ?? "",
       });
