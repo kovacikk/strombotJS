@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { DayCategory } from "../media/media_types.js";
+import { readFileSync } from "node:fs";
 
 const DayMeme: DiscordCommand = {
   name: "daymeme",
@@ -83,7 +84,8 @@ const DayMeme: DiscordCommand = {
       }
 
       console.log(`Uploading day meme ${dayMeme.name}`);
-      const file = new AttachmentBuilder(dayMeme?.path ?? "", {
+      const fileBuffer = readFileSync(dayMeme?.path ?? "");
+      const file = new AttachmentBuilder(fileBuffer, {
         name: dayMeme?.name ?? "",
       });
 

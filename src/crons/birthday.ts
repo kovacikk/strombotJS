@@ -3,6 +3,7 @@ import { User } from "../data/entities/User.js";
 import type { DiscordCron } from "../types.js";
 import { TextChannel, AttachmentBuilder, EmbedBuilder } from "discord.js";
 import { getGeneralChannel } from "../helpers";
+import { readFileSync } from "node:fs";
 
 const CAKE_IMAGE_PATH = "/app/media/events/birthday/cake.jpg";
 
@@ -41,7 +42,8 @@ async function buildBirthdayEmbed(user: User): Promise<{
     : user.firstName;
   const encodedName = encodeURIComponent(name ?? "");
 
-  const thumbnail = new AttachmentBuilder(CAKE_IMAGE_PATH);
+  const fileBuffer = readFileSync(CAKE_IMAGE_PATH);
+  const thumbnail = new AttachmentBuilder(fileBuffer);
 
   const embed = new EmbedBuilder()
     .setTitle(`Happy Birthday ${user.firstName}!`)

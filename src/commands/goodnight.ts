@@ -1,5 +1,6 @@
 import type { DiscordCommand } from "../types.js";
 import { AttachmentBuilder } from "discord.js";
+import { readFileSync } from "node:fs";
 
 const GOODNIGHT_PATH = "/app/media/events/goodnight/goodnight.mp4";
 
@@ -10,7 +11,8 @@ const Goodnight: DiscordCommand = {
   execute: async (interaction) => {
     await interaction.deferReply();
 
-    const file = new AttachmentBuilder(GOODNIGHT_PATH, {
+    const fileBuffer = readFileSync(GOODNIGHT_PATH);
+    const file = new AttachmentBuilder(fileBuffer, {
       name: "goodnight.mp4",
     });
 

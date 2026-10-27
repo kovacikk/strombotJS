@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { Meme as MemeEntity } from "../data/entities/Meme.js";
+import { readFileSync } from "node:fs";
 
 const Meme: DiscordCommand = {
   name: "meme",
@@ -74,7 +75,8 @@ const Meme: DiscordCommand = {
       }
 
       console.log(`Uploading meme ${meme.name}`);
-      const file = new AttachmentBuilder(meme?.path ?? "", {
+      const fileBuffer = readFileSync(meme?.path ?? "");
+      const file = new AttachmentBuilder(fileBuffer, {
         name: meme?.name ?? "",
       });
 

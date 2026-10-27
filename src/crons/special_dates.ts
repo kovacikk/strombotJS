@@ -8,6 +8,7 @@ import {
   MessageCreateOptions,
 } from "discord.js";
 import { getGeneralChannel } from "../helpers";
+import { readFileSync } from "node:fs";
 
 const SpecialDates: DiscordCron = {
   name: "special_dates",
@@ -23,7 +24,8 @@ const SpecialDates: DiscordCron = {
       for (const date of dates) {
         console.log(`Posting special date ${date.name}`);
 
-        const file = new AttachmentBuilder(date.path, {
+        const fileBuffer = readFileSync(date?.path ?? "");
+        const file = new AttachmentBuilder(fileBuffer, {
           name: date.name,
         });
 

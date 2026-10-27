@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { Bulborb as BulborbEntity } from "../data/entities/Bulborb.js";
+import { readFileSync } from "node:fs";
 
 const Bulborb: DiscordCommand = {
   name: "bulborb",
@@ -74,7 +75,8 @@ const Bulborb: DiscordCommand = {
       }
 
       console.log(`Uploading bulborb ${bulborb.name}`);
-      const file = new AttachmentBuilder(bulborb?.path ?? "", {
+      const fileBuffer = readFileSync(bulborb?.path ?? "");
+      const file = new AttachmentBuilder(fileBuffer, {
         name: bulborb?.name ?? "",
       });
 

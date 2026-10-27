@@ -3,6 +3,7 @@ import { AttachmentBuilder } from "discord.js";
 import { getRandomItem } from "../data/data_controller.js";
 import { getGeneralChannel } from "../helpers";
 import { Meme } from "../data/entities/Meme.js";
+import { readFileSync } from "node:fs";
 
 const Friday: DiscordCron = {
   name: "friday",
@@ -19,7 +20,8 @@ const Friday: DiscordCron = {
       }
 
       console.log(`Uploading meme ${meme.name}`);
-      const file = new AttachmentBuilder(meme?.path ?? "", {
+      const fileBuffer = readFileSync(meme?.path ?? "");
+      const file = new AttachmentBuilder(fileBuffer, {
         name: meme?.name ?? "",
       });
 

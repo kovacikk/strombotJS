@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { Cat as CatEntity } from "../data/entities/Cat.js";
+import { readFileSync } from "node:fs";
 
 const Cat: DiscordCommand = {
   name: "cat",
@@ -74,7 +75,8 @@ const Cat: DiscordCommand = {
       }
 
       console.log(`Uploading cat ${cat.name}`);
-      const file = new AttachmentBuilder(cat?.path ?? "", {
+      const fileBuffer = readFileSync(cat?.path ?? "");
+      const file = new AttachmentBuilder(fileBuffer, {
         name: cat?.name ?? "",
       });
 
