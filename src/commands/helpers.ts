@@ -46,10 +46,14 @@ export function getEmbedPages(
     const start = i * batchSize;
 
     const description = batch
-      .map((item, i) => {
-        let content = options?.numbered ? `${start + i + 1}. ${item}` : item;
+      .map((item, itemIdx) => {
+        let content = options?.numbered
+          ? `${start + itemIdx + 1}. ${item}`
+          : item;
 
-        return options?.emphasizeFirst && i == 0 ? `**${content}**` : content;
+        return options?.emphasizeFirst && itemIdx == 0 && i == 0
+          ? `**${content}**`
+          : content;
       })
       .join("\n");
 
@@ -91,7 +95,7 @@ export async function replyPagedEmbeds(
 ) {
   let currentPage = 0;
 
-  const response = await interaction.reply({
+  const response = await interaction.editReply({
     embeds: [pages[currentPage] as EmbedBuilder],
     components: [getPageActionRow(currentPage, pages.length)],
   });

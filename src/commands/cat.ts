@@ -37,6 +37,8 @@ const Cat: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
     const recent = interaction.options.getBoolean("recent") ?? false;
@@ -49,7 +51,7 @@ const Cat: DiscordCommand = {
       });
 
       if (cats.length == 0) {
-        await interaction.reply(`No valid cats found`);
+        await interaction.editReply(`No valid cats found`);
         return;
       }
 
@@ -67,7 +69,7 @@ const Cat: DiscordCommand = {
       });
 
       if (!cat) {
-        await interaction.reply(`No valid cat found`);
+        await interaction.editReply(`No valid cat found`);
         return;
       }
 
@@ -75,7 +77,7 @@ const Cat: DiscordCommand = {
         name: cat?.name ?? "",
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         files: [file],
       });
     }

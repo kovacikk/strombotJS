@@ -20,10 +20,12 @@ const Stat: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     let user = interaction.options.getUser("user");
 
     if (user && !("user" in user || "bot" in user)) {
-      interaction.reply(
+      interaction.editReply(
         `Invalid mention provided. Make sure to provide a user and not a role.`,
       );
       return;
@@ -37,12 +39,12 @@ const Stat: DiscordCommand = {
 
     // Reply with no information found if not in db
     if (!dbUser) {
-      interaction.reply(`No stats found for that user`);
+      interaction.editReply(`No stats found for that user`);
       return;
     }
 
     const embed = await buildStats(user, dbUser);
-    interaction.reply({
+    interaction.editReply({
       embeds: [embed],
     });
   },

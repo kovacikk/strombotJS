@@ -27,13 +27,14 @@ const Drive: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const link = interaction.options.getBoolean("link") ?? false;
 
     if (link) {
-      await interaction.reply(`Upload new files here: ${DRIVE_LINK}`);
+      await interaction.editReply(`Upload new files here: ${DRIVE_LINK}`);
       return;
     }
-    await interaction.deferReply();
 
     const driveEmbed = new DriveEmbedManager(interaction, driveState.Start);
     await driveEmbed.refresh(true);

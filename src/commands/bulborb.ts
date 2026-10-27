@@ -37,6 +37,8 @@ const Bulborb: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
     const recent = interaction.options.getBoolean("recent") ?? false;
@@ -49,7 +51,7 @@ const Bulborb: DiscordCommand = {
       });
 
       if (bulborbs.length == 0) {
-        await interaction.reply(`No valid bulborbs found`);
+        await interaction.editReply(`No valid bulborbs found`);
         return;
       }
 
@@ -67,7 +69,7 @@ const Bulborb: DiscordCommand = {
       });
 
       if (!bulborb) {
-        await interaction.reply(`No valid bulborb found`);
+        await interaction.editReply(`No valid bulborb found`);
         return;
       }
 
@@ -75,7 +77,7 @@ const Bulborb: DiscordCommand = {
         name: bulborb?.name ?? "",
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         files: [file],
       });
     }

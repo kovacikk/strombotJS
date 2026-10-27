@@ -30,6 +30,8 @@ const Cancel: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const list = interaction.options.getBoolean("list") ?? false;
 
     const guild = interaction.guild;
@@ -59,11 +61,13 @@ const Cancel: DiscordCommand = {
 
         await incrementCancel(user, roll.amount);
 
-        await interaction.reply(
+        await interaction.editReply(
           `${cancelledMember.displayName} ${roll.reason}`,
         );
       } else {
-        await interaction.reply("There was a problem finding a cancel target");
+        await interaction.editReply(
+          "There was a problem finding a cancel target",
+        );
       }
     }
   },

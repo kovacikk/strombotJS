@@ -273,7 +273,7 @@ export async function getDevotion(): Promise<User[]> {
       devotion: MoreThan(0),
     },
     order: {
-      cancels: "DESC",
+      devotion: "DESC",
     },
   });
 

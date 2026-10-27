@@ -8,11 +8,13 @@ const Goodnight: DiscordCommand = {
   description: "Post goodnight video",
   log: true,
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const file = new AttachmentBuilder(GOODNIGHT_PATH, {
       name: "goodnight.mp4",
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       files: [file],
     });
   },

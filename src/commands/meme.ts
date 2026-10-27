@@ -37,6 +37,8 @@ const Meme: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
     const recent = interaction.options.getBoolean("recent") ?? false;
@@ -49,7 +51,7 @@ const Meme: DiscordCommand = {
       });
 
       if (memes.length == 0) {
-        await interaction.reply(`No valid memes found`);
+        await interaction.editReply(`No valid memes found`);
         return;
       }
 
@@ -67,7 +69,7 @@ const Meme: DiscordCommand = {
       });
 
       if (!meme) {
-        await interaction.reply(`No valid meme found`);
+        await interaction.editReply(`No valid meme found`);
         return;
       }
 
@@ -75,7 +77,7 @@ const Meme: DiscordCommand = {
         name: meme?.name ?? "",
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         files: [file],
       });
     }

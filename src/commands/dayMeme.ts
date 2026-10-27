@@ -37,6 +37,8 @@ const DayMeme: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const query = interaction.options.getString("query")?.toLowerCase() ?? "";
     const list = interaction.options.getBoolean("list") ?? false;
     const recent = interaction.options.getBoolean("recent") ?? false;
@@ -58,7 +60,7 @@ const DayMeme: DiscordCommand = {
       });
 
       if (dayMemes.length == 0) {
-        await interaction.reply(`No valid day memes found`);
+        await interaction.editReply(`No valid day memes found`);
         return;
       }
 
@@ -76,7 +78,7 @@ const DayMeme: DiscordCommand = {
       });
 
       if (!dayMeme) {
-        await interaction.reply(`No valid day meme found`);
+        await interaction.editReply(`No valid day meme found`);
         return;
       }
 
@@ -84,7 +86,7 @@ const DayMeme: DiscordCommand = {
         name: dayMeme?.name ?? "",
       });
 
-      await interaction.reply({
+      await interaction.editReply({
         files: [file],
       });
     }

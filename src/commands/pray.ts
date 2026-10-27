@@ -12,6 +12,7 @@ import {
   GuildMember,
   ChatInputCommandInteraction,
   CacheType,
+  InteractionEditReplyOptions,
 } from "discord.js";
 import { getEmbedPages, replyPagedEmbeds } from "./helpers.js";
 import { Collection, InteractionReplyOptions } from "discord.js";
@@ -41,6 +42,8 @@ const Pray: DiscordCommand = {
     },
   ],
   execute: async (interaction) => {
+    await interaction.deferReply();
+
     const list = interaction.options.getBoolean("list") ?? false;
 
     if (list) {
@@ -52,7 +55,7 @@ const Pray: DiscordCommand = {
       const roll = rollPrayer(user.lastPrayer);
       await incrementDevotion(user, roll.amount, roll.setLastPrayer);
 
-      const message: InteractionReplyOptions = {
+      const message: InteractionEditReplyOptions = {
         content: `${roll.reason} **(${roll.amount >= 0 ? "+" + roll.amount : roll.amount})**`,
       };
 
@@ -60,7 +63,7 @@ const Pray: DiscordCommand = {
         message.files = [roll.file];
       }
 
-      await interaction.reply(message);
+      await interaction.editReply(message);
     }
   },
 };
