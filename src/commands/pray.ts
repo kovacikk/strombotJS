@@ -56,34 +56,35 @@ const Pray: DiscordCommand = {
       const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
 
       const lastPrayer = user.lastPrayer;
+      if (lastPrayer) {
+        const remaining = Math.abs(current.getTime() - lastPrayer.getTime());
 
-      const remaining = Math.abs(current.getTime() - lastPrayer.getTime());
+        // Check if time has not expired
+        if (lastPrayer && remaining < oneDayInMs) {
+          const earlyOptions = [
+            `Winky feels like you're coming on a little strong. Maybe wait a little before your next prayer.`,
+            `Winky is tired of your persistence. Maybe take a break from praying for now.`,
+            `"Frib...", Winky grumbles. Might want to slow down on prayers.`,
+            `You pray too soon after your last one. Winky ghosts you.`,
+          ];
 
-      // Check if time has not expired
-      if (lastPrayer && remaining < oneDayInMs) {
-        const earlyOptions = [
-          `Winky feels like you're coming on a little strong. Maybe wait a little before your next prayer.`,
-          `Winky is tired of your persistence. Maybe take a break from praying for now.`,
-          `"Frib...", Winky grumbles. Might want to slow down on prayers.`,
-          `You pray too soon after your last one. Winky ghosts you.`,
-        ];
+          const { hours, minutes } = getHoursMinutes(oneDayInMs - remaining);
 
-        const { hours, minutes } = getHoursMinutes(oneDayInMs - remaining);
+          let remainingItems = [];
 
-        let remainingItems = [];
+          if (hours > 0) {
+            remainingItems.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+          }
 
-        if (hours > 0) {
-          remainingItems.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+          if (minutes > 0) {
+            remainingItems.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
+          }
+
+          await interaction.editReply(
+            `${chooseRandom(earlyOptions)} *(${remainingItems.join(" ")} remaining)*`,
+          );
+          return;
         }
-
-        if (minutes > 0) {
-          remainingItems.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
-        }
-
-        await interaction.editReply(
-          `${chooseRandom(earlyOptions)} *(${remainingItems.join(" ")} remaining)*`,
-        );
-        return;
       }
 
       const roll = rollPrayer();
