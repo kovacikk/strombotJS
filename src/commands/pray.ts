@@ -52,7 +52,41 @@ const Pray: DiscordCommand = {
       // Pray to Winky
       const user = await getOrCreateUser(interaction.user.id);
 
-      const roll = rollPrayer(user.lastPrayer);
+      const current = new Date();
+      const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
+
+      const lastPrayer = user.lastPrayer;
+
+      const remaining = Math.abs(current.getTime() - lastPrayer.getTime());
+
+      // Check if time has not expired
+      if (lastPrayer && remaining < oneDayInMs) {
+        const earlyOptions = [
+          `Winky feels like you're coming on a little strong. Maybe wait a little before your next prayer.`,
+          `Winky is tired of your persistence. Maybe take a break from praying for now.`,
+          `"Frib...", Winky grumbles. Might want to slow down on prayers.`,
+          `You pray too soon after your last one. Winky ghosts you.`,
+        ];
+
+        const { hours, minutes } = getHoursMinutes(oneDayInMs - remaining);
+
+        let remainingItems = [];
+
+        if (hours > 0) {
+          remainingItems.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+        }
+
+        if (minutes > 0) {
+          remainingItems.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
+        }
+
+        await interaction.editReply(
+          `${chooseRandom(earlyOptions)} *(${remainingItems.join(" ")} remaining)*`,
+        );
+        return;
+      }
+
+      const roll = rollPrayer();
       await incrementDevotion(user, roll.amount, roll.setLastPrayer);
 
       const message: InteractionEditReplyOptions = {
@@ -96,32 +130,26 @@ const GOOD_OUTCOMES: OutcomeTier[] = [
   { type: PrayerRoll.Perfect, weight: 1 },
 ];
 
+function getHoursMinutes(diffMs: number): {
+  hours: number;
+  minutes: number;
+} {
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+  return {
+    hours,
+    minutes,
+  };
+}
+
 type PrayerOutcome = {
   amount: number;
   reason: string;
   file?: string;
   setLastPrayer: boolean;
 };
-function rollPrayer(lastPrayer: Date): PrayerOutcome {
-  const current = new Date();
-  const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
-
-  // Check if time has not expired
-  if (lastPrayer && current.getTime() - lastPrayer.getTime() < oneDayInMs) {
-    const earlyOptions = [
-      `Winky feels like you're coming on a little strong. Maybe wait a little before your next prayer.`,
-      `Winky is tired of your persistence. Maybe take a break from praying for now.`,
-      `"Frib...", Winky grumbles. Might want to slow down on prayers.`,
-      `You pray too soon after your last one. Winky ghosts you.`,
-    ];
-
-    return {
-      amount: 0,
-      reason: chooseRandom(earlyOptions),
-      setLastPrayer: false,
-    };
-  }
-
+function rollPrayer(): PrayerOutcome {
   const goodBadRoll = Math.random() * 100 < 70;
   if (goodBadRoll) {
     // 70% Good Outcome
@@ -157,7 +185,7 @@ function rollPrayer(lastPrayer: Date): PrayerOutcome {
       case PrayerRoll.Great:
         const greatOptions = [
           `Winky can tell you put your soul into this prayer. He not only fribs, but does a BIG hop in response.`,
-          `Winky is in an extra good mood today. He give you a frib and a hop.`,
+          `Winky is in an extra good mood today. He gives you a frib and a hop.`,
           `You came prepared wearing a matching red and green robe today. Winky likes it!`,
         ];
         return {
