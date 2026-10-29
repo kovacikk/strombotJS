@@ -91,7 +91,7 @@ export function getModalMap(): Map<string, DiscordModal> {
 
 const BIGONE_CHANNEL_ID = process.env.BIGONE_CHANNEL_ID ?? "";
 const TEST_CHANNEL_ID = process.env.TEST_CHANNEL_ID ?? "";
-const TEST = Boolean(process.env.TEST) ?? false;
+const TEST = process.env.TEST === "true";
 
 export async function getGeneralChannel(client: Client): Promise<TextChannel> {
   const generalChannelId = TEST ? TEST_CHANNEL_ID : BIGONE_CHANNEL_ID;
